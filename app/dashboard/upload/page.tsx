@@ -9,8 +9,6 @@ import { UploadProgress } from "@/components/upload-progress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { getAudioDuration, estimateDurationFromSize } from "@/lib/audio-utils";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "completed" | "error";
@@ -97,7 +95,7 @@ export default function UploadPage() {
       // Redirect to the specific project page
       setTimeout(() => {
         setUploadStatus("completed");
-        router.push(`/projects/${projectId}`);
+        router.push(`/dashboard/projects/${projectId}`);
       }, 1000);
     } catch (err) {
       console.error("Upload error:", err);
@@ -119,12 +117,6 @@ export default function UploadPage() {
     <div className="container max-w-4xl mx-auto py-10 px-4">
       {/* Header */}
       <div className="mb-8">
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Button>
-        </Link>
         <h1 className="text-3xl font-bold">Upload Your Podcast</h1>
         <p className="text-muted-foreground mt-2">
           Upload your audio file to generate AI-powered insights,
@@ -199,3 +191,4 @@ export default function UploadPage() {
     </div>
   );
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { formatFileSize, formatDate, formatDuration } from "@/lib/format";
+import { formatFileSize, formatSmartDate, formatDuration } from "@/lib/format";
 import { getStatusVariant } from "@/lib/status-utils";
 
 interface ProjectStatusCardProps {
@@ -13,37 +13,32 @@ interface ProjectStatusCardProps {
 export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <CardTitle className="text-xl">{project.fileName}</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Created {formatDate(project.createdAt)}
-            </p>
+      <CardContent className="py-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold break-words mb-1">
+              {project.fileName}
+            </h2>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
+              <span>{formatSmartDate(project.createdAt)}</span>
+              <span>•</span>
+              <span>{formatFileSize(project.fileSize)}</span>
+              <span>•</span>
+              <span className="uppercase">{project.fileFormat}</span>
+              {project.fileDuration && (
+                <>
+                  <span>•</span>
+                  <span>{formatDuration(project.fileDuration)}</span>
+                </>
+              )}
+            </div>
           </div>
-          <Badge variant={getStatusVariant(project.status)}>
+          <Badge
+            variant={getStatusVariant(project.status)}
+            className="shrink-0"
+          >
             {project.status}
           </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <p className="text-muted-foreground">File Size</p>
-            <p className="font-medium">{formatFileSize(project.fileSize)}</p>
-          </div>
-          <div>
-            <p className="text-muted-foreground">Format</p>
-            <p className="font-medium uppercase">{project.fileFormat}</p>
-          </div>
-          {project.fileDuration && (
-            <div>
-              <p className="text-muted-foreground">Duration</p>
-              <p className="font-medium">
-                {formatDuration(project.fileDuration)}
-              </p>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

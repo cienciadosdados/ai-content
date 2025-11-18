@@ -29,6 +29,21 @@ INNGEST_SIGNING_KEY=signkey-prod-xxxxx
 ASSEMBLYAI_API_KEY=your_assemblyai_key
 ```
 
+### Step 2.5: Configure Clerk-Convex Integration ⚠️ IMPORTANT
+
+**This is required for the app to work!**
+
+1. Go to [Clerk Dashboard](https://dashboard.clerk.com)
+2. Select your application
+3. Navigate to **Configure** → **JWT Templates**
+4. Click **"New template"**
+5. Choose **"Convex"** from the templates list
+6. Name it: `convex` (must be exactly this name)
+7. The template will auto-configure the correct claims
+8. Click **Save**
+
+**Why this is needed:** Clerk needs to issue JWT tokens that Convex can verify. Without this, you'll get a 404 error when trying to fetch data.
+
 ### Step 3: Start Convex
 
 ```bash
@@ -110,9 +125,20 @@ AssemblyAI will:
 
 ## ⚠️ Common Issues
 
+### "404 Not Found" when fetching Convex data:
+- **Most common issue!** You need to set up Clerk-Convex JWT integration
+- Go to Clerk Dashboard → JWT Templates → Create "Convex" template
+- Name must be exactly `convex`
+- Refresh your browser after setting this up
+
 ### "Unauthorized" error:
 - Check Clerk keys are correct
 - Ensure you're signed in
+
+### Projects page not loading:
+- Verify Clerk-Convex JWT template is set up (see above)
+- Check browser console for 404 errors on `/tokens/convex`
+- Ensure `dynamic` prop is on ClerkProvider in layout.tsx
 
 ### "AssemblyAI transcription failed":
 - Verify ASSEMBLYAI_API_KEY is set
