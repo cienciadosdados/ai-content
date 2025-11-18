@@ -3,31 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { formatFileSize, formatDate, formatDuration } from "@/lib/format";
+import { getStatusVariant } from "@/lib/status-utils";
 
 interface ProjectStatusCardProps {
   project: Doc<"projects">;
 }
 
 export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
-  const getStatusColor = (
-    status: "uploaded" | "processing" | "completed" | "failed"
-  ) => {
-    switch (status) {
-      case "uploaded":
-        return "default";
-      case "processing":
-        return "secondary";
-      case "completed":
-        return "default";
-      case "failed":
-        return "destructive";
-    }
-  };
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString();
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -38,7 +21,7 @@ export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
               Created {formatDate(project.createdAt)}
             </p>
           </div>
-          <Badge variant={getStatusColor(project.status)}>
+          <Badge variant={getStatusVariant(project.status)}>
             {project.status}
           </Badge>
         </div>
@@ -47,9 +30,7 @@ export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">File Size</p>
-            <p className="font-medium">
-              {(project.fileSize / (1024 * 1024)).toFixed(2)} MB
-            </p>
+            <p className="font-medium">{formatFileSize(project.fileSize)}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Format</p>
@@ -59,8 +40,7 @@ export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
             <div>
               <p className="text-muted-foreground">Duration</p>
               <p className="font-medium">
-                {Math.floor(project.fileDuration / 60)}:
-                {String(Math.floor(project.fileDuration % 60)).padStart(2, "0")}
+                {formatDuration(project.fileDuration)}
               </p>
             </div>
           )}
@@ -69,4 +49,3 @@ export function ProjectStatusCard({ project }: ProjectStatusCardProps) {
     </Card>
   );
 }
-

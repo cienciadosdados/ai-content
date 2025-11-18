@@ -11,11 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import {
-  getAudioDuration,
-  formatDuration,
-  estimateDurationFromSize,
-} from "@/lib/audio-utils";
+import { getAudioDuration, estimateDurationFromSize } from "@/lib/audio-utils";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "completed" | "error";
 

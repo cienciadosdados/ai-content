@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+import { formatFileSize, formatSmartDate, formatDuration } from "@/lib/format";
+import { getStatusVariant } from "@/lib/status-utils";
 
 export default function ProjectsPage() {
   const { userId } = useAuth();
@@ -57,36 +59,6 @@ export default function ProjectsPage() {
       case "failed":
         return <XCircle className="h-4 w-4" />;
     }
-  };
-
-  const getStatusColor = (
-    status: "uploaded" | "processing" | "completed" | "failed",
-  ) => {
-    switch (status) {
-      case "uploaded":
-        return "default";
-      case "processing":
-        return "secondary";
-      case "completed":
-        return "default";
-      case "failed":
-        return "destructive";
-    }
-  };
-
-  const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
   };
 
   return (
@@ -162,11 +134,11 @@ export default function ProjectsPage() {
                               {project.fileName}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {formatDate(project.createdAt)}
+                              {formatSmartDate(project.createdAt)}
                             </p>
                           </div>
                           <Badge
-                            variant={getStatusColor(project.status)}
+                            variant={getStatusVariant(project.status)}
                             className="flex items-center gap-1"
                           >
                             {getStatusIcon(project.status)}
@@ -176,19 +148,10 @@ export default function ProjectsPage() {
 
                         {/* Metadata */}
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>
-                            {(project.fileSize / (1024 * 1024)).toFixed(2)} MB
-                          </span>
-                          <span className="uppercase">
-                            {project.fileFormat}
-                          </span>
+                          <span>{formatFileSize(project.fileSize)}</span>
+                          <span className="uppercase">{project.fileFormat}</span>
                           {project.fileDuration && (
-                            <span>
-                              {Math.floor(project.fileDuration / 60)}:
-                              {String(
-                                Math.floor(project.fileDuration % 60),
-                              ).padStart(2, "0")}
-                            </span>
+                            <span>{formatDuration(project.fileDuration)}</span>
                           )}
                         </div>
 

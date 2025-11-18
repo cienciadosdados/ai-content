@@ -52,8 +52,6 @@ pnpm install
 
 ### 3. Set up environment variables
 
-See [ENV_SETUP.md](./ENV_SETUP.md) for detailed instructions.
-
 Create a `.env.local` file with:
 - `BLOB_READ_WRITE_TOKEN`
 - `NEXT_PUBLIC_CONVEX_URL`
@@ -106,7 +104,7 @@ Visit [http://localhost:3000/api/inngest](http://localhost:3000/api/inngest) to 
 │   ├── upload-dropzone.tsx
 │   ├── upload-progress.tsx
 │   ├── project-status-card.tsx
-│   └── processing-steps.tsx
+│   └── processing-flow.tsx
 ├── convex/
 │   ├── schema.ts           # Database schema
 │   └── projects.ts         # Queries & mutations
@@ -115,7 +113,11 @@ Visit [http://localhost:3000/api/inngest](http://localhost:3000/api/inngest) to 
 │   └── functions/
 │       └── podcast-processor.ts # Main processing workflow
 └── lib/
-    └── utils.ts            # Utility functions
+    ├── format.ts           # Formatting utilities (file size, dates, duration)
+    ├── status-utils.ts     # Status badge utilities
+    ├── audio-utils.ts      # Audio duration extraction
+    ├── processing-time-estimator.ts  # Time estimation
+    └── utils.ts            # General utilities
 ```
 
 ## 🔄 How It Works

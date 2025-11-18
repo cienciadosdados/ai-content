@@ -3,7 +3,7 @@
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileAudio, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
-import { formatDuration } from "@/lib/audio-utils";
+import { formatFileSize, formatDuration } from "@/lib/format";
 
 interface UploadProgressProps {
   fileName: string;
@@ -22,13 +22,6 @@ export function UploadProgress({
   status,
   error,
 }: UploadProgressProps) {
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
-  };
 
   return (
     <Card>
