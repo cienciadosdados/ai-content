@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileAudio, FileVideo } from "lucide-react";
+import { FileAudio, FileVideo, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { formatFileSize, formatSmartDate, formatDuration } from "@/lib/format";
@@ -67,24 +67,30 @@ export function ProjectCard({ project }: ProjectCardProps) {
                     {formatSmartDate(project.createdAt)}
                   </p>
                 </div>
-                <Badge
-                  variant={getStatusVariant(project.status)}
-                  className="flex items-center gap-1.5 shrink-0 h-7 @md:h-8 text-xs @md:text-sm px-2.5 @md:px-3 whitespace-nowrap"
-                >
-                  <StatusIcon
-                    className={`h-3.5 w-3.5 @md:h-4 @md:w-4 ${project.status === "processing" ? "animate-spin" : ""}`}
-                  />
-                  <span className="hidden @md:inline">
-                    {getProcessingPhase()}
-                  </span>
-                  <span className="@md:hidden">
-                    {project.status === "processing"
-                      ? project.jobStatus.transcription === "running"
-                        ? "Trans"
-                        : "Gen"
-                      : project.status}
-                  </span>
-                </Badge>
+                {project.status === "completed" ? (
+                  <div className="rounded-full bg-muted/50 p-1.5 group-hover:bg-primary/10 transition-colors shrink-0">
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                ) : (
+                  <Badge
+                    variant={getStatusVariant(project.status)}
+                    className="flex items-center gap-1.5 shrink-0 h-7 @md:h-8 text-xs @md:text-sm px-2.5 @md:px-3 whitespace-nowrap"
+                  >
+                    <StatusIcon
+                      className={`h-3.5 w-3.5 @md:h-4 @md:w-4 ${project.status === "processing" ? "animate-spin" : ""}`}
+                    />
+                    <span className="hidden @md:inline">
+                      {getProcessingPhase()}
+                    </span>
+                    <span className="@md:hidden">
+                      {project.status === "processing"
+                        ? project.jobStatus.transcription === "running"
+                          ? "Trans"
+                          : "Gen"
+                        : project.status}
+                    </span>
+                  </Badge>
+                )}
               </div>
 
               {/* Metadata with badges */}

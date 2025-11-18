@@ -1,16 +1,14 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Upload } from "lucide-react";
 import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
-interface CtaSectionProps {
-  isSignedIn: boolean;
-}
+export async function CtaSection() {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
 
-export function CtaSection({ isSignedIn }: CtaSectionProps) {
   return (
     <section className="container mx-auto px-4 py-20">
       <Card className="max-w-4xl mx-auto">
@@ -41,4 +39,3 @@ export function CtaSection({ isSignedIn }: CtaSectionProps) {
     </section>
   );
 }
-

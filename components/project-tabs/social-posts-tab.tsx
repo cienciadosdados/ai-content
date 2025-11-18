@@ -1,6 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SocialIcon } from "react-social-icons";
+import { Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface SocialPostsTabProps {
   socialPosts: {
@@ -14,24 +19,110 @@ interface SocialPostsTabProps {
 }
 
 const PLATFORMS = [
-  { key: "twitter" as const, title: "Twitter / X" },
-  { key: "linkedin" as const, title: "LinkedIn" },
-  { key: "instagram" as const, title: "Instagram" },
-  { key: "tiktok" as const, title: "TikTok" },
-  { key: "youtube" as const, title: "YouTube Description" },
-  { key: "facebook" as const, title: "Facebook" },
+  { 
+    key: "twitter" as const, 
+    title: "Twitter / X",
+    url: "https://twitter.com",
+    bgColor: "bg-black/5 dark:bg-white/5",
+    hoverColor: "hover:bg-black/10 dark:hover:bg-white/10"
+  },
+  { 
+    key: "linkedin" as const, 
+    title: "LinkedIn",
+    url: "https://linkedin.com",
+    bgColor: "bg-blue-50 dark:bg-blue-950/20",
+    hoverColor: "hover:bg-blue-100 dark:hover:bg-blue-950/30"
+  },
+  { 
+    key: "instagram" as const, 
+    title: "Instagram",
+    url: "https://instagram.com",
+    bgColor: "bg-pink-50 dark:bg-pink-950/20",
+    hoverColor: "hover:bg-pink-100 dark:hover:bg-pink-950/30"
+  },
+  { 
+    key: "tiktok" as const, 
+    title: "TikTok",
+    url: "https://tiktok.com",
+    bgColor: "bg-slate-50 dark:bg-slate-950/20",
+    hoverColor: "hover:bg-slate-100 dark:hover:bg-slate-950/30"
+  },
+  { 
+    key: "youtube" as const, 
+    title: "YouTube",
+    url: "https://youtube.com",
+    bgColor: "bg-red-50 dark:bg-red-950/20",
+    hoverColor: "hover:bg-red-100 dark:hover:bg-red-950/30"
+  },
+  { 
+    key: "facebook" as const, 
+    title: "Facebook",
+    url: "https://facebook.com",
+    bgColor: "bg-blue-50 dark:bg-blue-950/20",
+    hoverColor: "hover:bg-blue-100 dark:hover:bg-blue-950/30"
+  },
 ];
 
 export function SocialPostsTab({ socialPosts }: SocialPostsTabProps) {
+  const [copiedPlatform, setCopiedPlatform] = useState<string | null>(null);
+
+  const handleCopy = async (platform: string, text: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedPlatform(platform);
+    toast.success(`${platform} post copied to clipboard!`);
+    setTimeout(() => setCopiedPlatform(null), 2000);
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4 md:grid-cols-2">
       {PLATFORMS.map((platform) => (
-        <Card key={platform.key}>
-          <CardHeader>
-            <CardTitle>{platform.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{socialPosts[platform.key]}</p>
+        <Card 
+          key={platform.key}
+          className={`transition-all ${platform.bgColor} border-2 hover:shadow-md`}
+        >
+          <CardContent className="p-6">
+            {/* Header with Icon and Title */}
+            <div className="flex items-start gap-4 mb-4">
+              <div className="shrink-0">
+                <SocialIcon 
+                  url={platform.url}
+                  style={{ height: 48, width: 48 }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-lg mb-1">{platform.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  Ready to post
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleCopy(platform.title, socialPosts[platform.key])}
+                className="shrink-0"
+              >
+                {copiedPlatform === platform.title ? (
+                  <>
+                    <Check className="h-4 w-4 mr-1" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Post Content */}
+            <div className="relative">
+              <div className="rounded-lg bg-white dark:bg-slate-900 p-4 text-sm border">
+                <p className="whitespace-pre-wrap leading-relaxed">
+                  {socialPosts[platform.key]}
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ))}

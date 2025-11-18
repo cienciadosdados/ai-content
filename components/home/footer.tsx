@@ -1,5 +1,3 @@
-"use client";
-
 import { Sparkles } from "lucide-react";
 
 export function Footer() {
@@ -19,4 +17,3 @@ export function Footer() {
     </footer>
   );
 }
-

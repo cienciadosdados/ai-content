@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import {
   FileText,
@@ -73,7 +71,9 @@ export function FeaturesSection() {
                   <div className="rounded-lg bg-primary/10 p-3 w-fit mb-4">
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    {feature.title}
+                  </h3>
                   <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
               </Card>
@@ -84,4 +84,3 @@ export function FeaturesSection() {
     </section>
   );
 }
-

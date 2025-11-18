@@ -25,7 +25,7 @@ export function UploadProgress({
 
   return (
     <Card>
-      <CardContent className="pt-6">
+      <CardContent className="p-4">
         <div className="space-y-4">
           {/* File Info */}
           <div className="flex items-start gap-4">

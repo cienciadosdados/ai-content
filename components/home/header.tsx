@@ -1,15 +1,13 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { SignInButton, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
-interface HeaderProps {
-  isSignedIn: boolean;
-}
+export async function Header() {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
 
-export function Header({ isSignedIn }: HeaderProps) {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -35,4 +33,3 @@ export function Header({ isSignedIn }: HeaderProps) {
     </header>
   );
 }
-
