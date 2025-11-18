@@ -41,7 +41,15 @@ INNGEST_EVENT_KEY=your_inngest_event_key_here
 INNGEST_SIGNING_KEY=your_inngest_signing_key_here
 ```
 
-### Optional: OpenAI (for future AI implementation)
+### AssemblyAI (for transcription)
+
+Get your API key from: https://www.assemblyai.com/dashboard
+
+```bash
+ASSEMBLYAI_API_KEY=your_assemblyai_api_key_here
+```
+
+### OpenAI (for content generation)
 
 Get your API key from: https://platform.openai.com/api-keys
 

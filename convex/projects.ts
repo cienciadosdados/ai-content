@@ -32,11 +32,11 @@ export const createProject = mutation({
       mimeType: args.mimeType,
       status: "uploaded",
       jobStatus: {
-        audioExtraction: "pending",
         transcription: "pending",
         keyMoments: "pending",
         summary: "pending",
         captions: "pending",
+        social: "pending",
         titles: "pending",
         hashtags: "pending",
       },
@@ -83,11 +83,11 @@ export const updateJobStatus = mutation({
   args: {
     projectId: v.id("projects"),
     job: v.union(
-      v.literal("audioExtraction"),
       v.literal("transcription"),
       v.literal("keyMoments"),
       v.literal("summary"),
       v.literal("captions"),
+      v.literal("social"),
       v.literal("titles"),
       v.literal("hashtags")
     ),
@@ -140,6 +140,17 @@ export const saveTranscript = mutation({
           ),
         })
       ),
+      speakers: v.optional(
+        v.array(
+          v.object({
+            speaker: v.string(),
+            start: v.number(),
+            end: v.number(),
+            text: v.string(),
+            confidence: v.number(),
+          })
+        )
+      ),
     }),
   },
   handler: async (ctx, args) => {
@@ -175,10 +186,14 @@ export const saveGeneratedContent = mutation({
         tldr: v.string(),
       })
     ),
-    captions: v.optional(
+    socialPosts: v.optional(
       v.object({
-        srtUrl: v.string(),
-        rawText: v.string(),
+        twitter: v.string(),
+        linkedin: v.string(),
+        instagram: v.string(),
+        tiktok: v.string(),
+        youtube: v.string(),
+        facebook: v.string(),
       })
     ),
     titles: v.optional(
@@ -235,22 +250,6 @@ export const updateMetrics = mutation({
 
     await ctx.db.patch(args.projectId, {
       metrics: updatedMetrics,
-      updatedAt: Date.now(),
-    });
-  },
-});
-
-/**
- * Save the audio URL after extraction from video
- */
-export const saveAudioUrl = mutation({
-  args: {
-    projectId: v.id("projects"),
-    audioUrl: v.string(),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.projectId, {
-      audioUrl: args.audioUrl,
       updatedAt: Date.now(),
     });
   },

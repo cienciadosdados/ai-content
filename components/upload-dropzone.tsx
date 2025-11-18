@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, FileAudio, FileVideo } from "lucide-react";
+import { Upload, FileAudio } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadDropzoneProps {
@@ -24,15 +24,29 @@ export function UploadDropzone({
         onFileSelect(acceptedFiles[0]);
       }
     },
-    [onFileSelect]
+    [onFileSelect],
   );
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
       onDrop,
       accept: {
-        "audio/*": [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac"],
-        "video/*": [".mp4", ".webm", ".mov", ".avi", ".mkv"],
+        "audio/*": [
+          ".mp3",
+          ".mp4", // M4A files
+          ".m4a",
+          ".wav",
+          ".wave",
+          ".aac",
+          ".aacp",
+          ".ogg",
+          ".oga",
+          ".opus",
+          ".webm",
+          ".flac",
+          ".3gp",
+          ".3g2",
+        ],
       },
       maxSize,
       maxFiles: 1,
@@ -50,7 +64,7 @@ export function UploadDropzone({
           "hover:border-primary/50 hover:bg-accent/50",
           isDragActive && "border-primary bg-accent",
           disabled && "opacity-50 cursor-not-allowed",
-          errorMessage && "border-destructive"
+          errorMessage && "border-destructive",
         )}
       >
         <input {...getInputProps()} />
@@ -60,10 +74,7 @@ export function UploadDropzone({
             {isDragActive ? (
               <Upload className="h-10 w-10 text-primary animate-bounce" />
             ) : (
-              <div className="flex gap-2">
-                <FileAudio className="h-10 w-10 text-muted-foreground" />
-                <FileVideo className="h-10 w-10 text-muted-foreground" />
-              </div>
+              <FileAudio className="h-10 w-10 text-muted-foreground" />
             )}
           </div>
 
@@ -77,8 +88,7 @@ export function UploadDropzone({
               or click to browse files
             </p>
             <p className="text-xs text-muted-foreground">
-              Supports audio (MP3, WAV, M4A, etc.) and video (MP4, WebM, MOV,
-              etc.)
+              Supports audio files: MP3, WAV, M4A, FLAC, OGG, AAC, and more
             </p>
             <p className="text-xs text-muted-foreground font-medium">
               Maximum file size: {Math.round(maxSize / (1024 * 1024))}MB
@@ -93,4 +103,3 @@ export function UploadDropzone({
     </div>
   );
 }
-

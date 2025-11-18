@@ -11,6 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import {
+  getAudioDuration,
+  formatDuration,
+  estimateDurationFromSize,
+} from "@/lib/audio-utils";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "completed" | "error";
 
@@ -18,15 +23,31 @@ export default function UploadPage() {
   const router = useRouter();
   const { userId } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileDuration, setFileDuration] = useState<number | undefined>(
+    undefined
+  );
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = async (file: File) => {
     setSelectedFile(file);
     setUploadStatus("idle");
     setUploadProgress(0);
     setError(null);
+
+    // Extract audio duration using HTML5 Audio API
+    try {
+      const duration = await getAudioDuration(file);
+      setFileDuration(duration);
+      console.log(`Audio duration extracted: ${duration} seconds`);
+    } catch (err) {
+      console.warn("Could not extract duration from audio file:", err);
+      // Fallback: estimate from file size
+      const estimated = estimateDurationFromSize(file.size);
+      setFileDuration(estimated);
+      console.log(`Using estimated duration: ${estimated} seconds`);
+    }
   };
 
   const handleUpload = async () => {
@@ -65,6 +86,7 @@ export default function UploadPage() {
           fileName: selectedFile.name,
           fileSize: selectedFile.size,
           mimeType: selectedFile.type,
+          fileDuration: fileDuration, // Include duration for accurate time estimation
         }),
       });
 
@@ -91,6 +113,7 @@ export default function UploadPage() {
 
   const handleReset = () => {
     setSelectedFile(null);
+    setFileDuration(undefined);
     setUploadStatus("idle");
     setUploadProgress(0);
     setError(null);
@@ -108,7 +131,7 @@ export default function UploadPage() {
         </Link>
         <h1 className="text-3xl font-bold">Upload Your Podcast</h1>
         <p className="text-muted-foreground mt-2">
-          Upload your audio or video file to generate AI-powered insights,
+          Upload your audio file to generate AI-powered insights,
           summaries, and social media content.
         </p>
       </div>
@@ -127,7 +150,7 @@ export default function UploadPage() {
             <UploadProgress
               fileName={selectedFile.name}
               fileSize={selectedFile.size}
-              fileType={selectedFile.type}
+              fileDuration={fileDuration}
               progress={uploadProgress}
               status={uploadStatus}
               error={error || undefined}

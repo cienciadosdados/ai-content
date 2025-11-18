@@ -24,13 +24,6 @@ export default defineSchema({
 
     // Detailed job status for UI progress tracking
     jobStatus: v.object({
-      audioExtraction: v.union(
-        v.literal("pending"),
-        v.literal("running"),
-        v.literal("completed"),
-        v.literal("failed"),
-        v.literal("skipped")
-      ),
       transcription: v.union(
         v.literal("pending"),
         v.literal("running"),
@@ -54,6 +47,14 @@ export default defineSchema({
         v.literal("running"),
         v.literal("completed"),
         v.literal("failed")
+      ),
+      social: v.optional(
+        v.union(
+          v.literal("pending"),
+          v.literal("running"),
+          v.literal("completed"),
+          v.literal("failed")
+        )
       ),
       titles: v.union(
         v.literal("pending"),
@@ -92,9 +93,6 @@ export default defineSchema({
       })
     ),
 
-    // Processed audio URL (if video was converted)
-    audioUrl: v.optional(v.string()),
-
     // AI-generated outputs
     transcript: v.optional(
       v.object({
@@ -115,6 +113,18 @@ export default defineSchema({
               )
             ),
           })
+        ),
+        // Speaker information from AssemblyAI
+        speakers: v.optional(
+          v.array(
+            v.object({
+              speaker: v.string(), // "A", "B", "C", etc.
+              start: v.number(), // seconds
+              end: v.number(), // seconds
+              text: v.string(),
+              confidence: v.number(), // 0-1
+            })
+          )
         ),
       })
     ),
@@ -143,6 +153,17 @@ export default defineSchema({
       v.object({
         srtUrl: v.string(),
         rawText: v.string(),
+      })
+    ),
+
+    socialPosts: v.optional(
+      v.object({
+        twitter: v.string(),
+        linkedin: v.string(),
+        instagram: v.string(),
+        tiktok: v.string(),
+        youtube: v.string(),
+        facebook: v.string(),
       })
     ),
 
@@ -176,4 +197,3 @@ export default defineSchema({
     .index("by_user_and_status", ["userId", "status"])
     .index("by_created_at", ["createdAt"]),
 });
-

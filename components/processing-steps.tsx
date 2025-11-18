@@ -7,18 +7,24 @@ import {
   Circle,
   Loader2,
   XCircle,
-  Music,
   FileText,
   Sparkles,
   MessageSquare,
   Type,
   Hash,
-  Captions,
+  Share2,
 } from "lucide-react";
 import type { Doc } from "@/convex/_generated/dataModel";
 
 interface ProcessingStepsProps {
   jobStatus: Doc<"projects">["jobStatus"];
+  realtimeStatus?: {
+    step?: string;
+    status?: string;
+    message?: string;
+    progress?: number;
+  } | null;
+  stepUpdates?: Map<string, { message: string; status: string }>;
 }
 
 type JobStep = {
@@ -28,18 +34,20 @@ type JobStep = {
 };
 
 const JOB_STEPS: JobStep[] = [
-  { key: "audioExtraction", label: "Audio Extraction", icon: Music },
   { key: "transcription", label: "Transcription", icon: FileText },
   { key: "keyMoments", label: "Key Moments", icon: Sparkles },
   { key: "summary", label: "Summary", icon: MessageSquare },
-  { key: "captions", label: "Captions", icon: Captions },
+  { key: "social", label: "Social Posts", icon: Share2 },
   { key: "titles", label: "Titles", icon: Type },
   { key: "hashtags", label: "Hashtags", icon: Hash },
 ];
 
-export function ProcessingSteps({ jobStatus }: ProcessingStepsProps) {
+export function ProcessingSteps({
+  jobStatus,
+  stepUpdates,
+}: ProcessingStepsProps) {
   const getStatusIcon = (
-    status: "pending" | "running" | "completed" | "failed" | "skipped"
+    status: "pending" | "running" | "completed" | "failed" | "skipped",
   ) => {
     switch (status) {
       case "pending":
@@ -56,7 +64,7 @@ export function ProcessingSteps({ jobStatus }: ProcessingStepsProps) {
   };
 
   const getStatusBadge = (
-    status: "pending" | "running" | "completed" | "failed" | "skipped"
+    status: "pending" | "running" | "completed" | "failed" | "skipped",
   ) => {
     switch (status) {
       case "pending":
@@ -80,31 +88,45 @@ export function ProcessingSteps({ jobStatus }: ProcessingStepsProps) {
       <CardContent>
         <div className="space-y-4">
           {JOB_STEPS.map((step, index) => {
-            const status = jobStatus[step.key];
+            const status = jobStatus[step.key] || "pending";
             const Icon = step.icon;
 
+            // Check if this step has a realtime update
+            const stepUpdate = stepUpdates?.get(step.key);
+            const hasRealtimeUpdate = !!stepUpdate;
+
             return (
-              <div key={step.key} className="flex items-center gap-4">
-                {/* Step Number & Icon */}
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
-                    {index + 1}
+              <div key={step.key} className="space-y-2">
+                <div className="flex items-center gap-4">
+                  {/* Step Number & Icon */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
+                      {index + 1}
+                    </div>
+                    <div className="rounded-lg bg-primary/10 p-2">
+                      <Icon className="h-4 w-4 text-primary" />
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-primary/10 p-2">
-                    <Icon className="h-4 w-4 text-primary" />
+
+                  {/* Step Label */}
+                  <div className="flex-1">
+                    <p className="font-medium">{step.label}</p>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(status)}
+                    {getStatusBadge(status)}
                   </div>
                 </div>
 
-                {/* Step Label */}
-                <div className="flex-1">
-                  <p className="font-medium">{step.label}</p>
-                </div>
-
-                {/* Status */}
-                <div className="flex items-center gap-2">
-                  {getStatusIcon(status)}
-                  {getStatusBadge(status)}
-                </div>
+                {/* Inngest Realtime Status Message */}
+                {hasRealtimeUpdate && stepUpdate && (
+                  <div className="ml-14 text-sm text-primary/80 italic flex items-center gap-2">
+                    <span>✨</span>
+                    <span>{stepUpdate.message}</span>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -113,4 +135,3 @@ export function ProcessingSteps({ jobStatus }: ProcessingStepsProps) {
     </Card>
   );
 }
-

@@ -2,12 +2,13 @@
 
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileAudio, FileVideo, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { FileAudio, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { formatDuration } from "@/lib/audio-utils";
 
 interface UploadProgressProps {
   fileName: string;
   fileSize: number;
-  fileType: string;
+  fileDuration?: number;
   progress: number;
   status: "idle" | "uploading" | "processing" | "completed" | "error";
   error?: string;
@@ -16,7 +17,7 @@ interface UploadProgressProps {
 export function UploadProgress({
   fileName,
   fileSize,
-  fileType,
+  fileDuration,
   progress,
   status,
   error,
@@ -26,11 +27,8 @@ export function UploadProgress({
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   };
-
-  const isVideo = fileType.startsWith("video/");
-  const Icon = isVideo ? FileVideo : FileAudio;
 
   return (
     <Card>
@@ -39,13 +37,22 @@ export function UploadProgress({
           {/* File Info */}
           <div className="flex items-start gap-4">
             <div className="rounded-lg bg-primary/10 p-3">
-              <Icon className="h-6 w-6 text-primary" />
+              <FileAudio className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{fileName}</p>
-              <p className="text-sm text-muted-foreground">
-                {formatFileSize(fileSize)}
-              </p>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span>{formatFileSize(fileSize)}</span>
+                {fileDuration && (
+                  <>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{formatDuration(fileDuration)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             <div>
               {status === "uploading" && (
@@ -91,4 +98,3 @@ export function UploadProgress({
     </Card>
   );
 }
-

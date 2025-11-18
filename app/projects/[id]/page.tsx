@@ -1,11 +1,11 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useCallback, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { ProjectStatusCard } from "@/components/project-status-card";
-import { ProcessingSteps } from "@/components/processing-steps";
+import { ProcessingFlow } from "@/components/processing-flow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Download, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+import { useInngestSubscription } from "@inngest/realtime/hooks";
 
 export default function ProjectDetailPage({
   params,
@@ -23,14 +24,59 @@ export default function ProjectDetailPage({
   const { id } = use(params);
   const projectId = id as Id<"projects">;
 
-  // Subscribe to project updates in real-time
+  // Fetch project data from Convex (for persistence)
   const project = useQuery(api.projects.getProject, { projectId });
 
-  // Note: Files are stored with public access but protected by:
-  // 1. Application-level access control (Convex userId check)
-  // 2. Random blob URLs (hard to guess)
-  // 3. Authentication required to view project data
-  // Optional: Implement signed URLs for time-limited access in the future
+  // State for real-time updates from Inngest Realtime
+  const [processingStatus, setProcessingStatus] = useState<{
+    step?: string;
+    status?: string;
+    message?: string;
+    progress?: number;
+  } | null>(null);
+
+  // Track all step updates for showing completion messages
+  const [stepUpdates, setStepUpdates] = useState<
+    Map<string, { message: string; status: string }>
+  >(new Map());
+
+  // Fetch Inngest Realtime subscription token
+  const fetchRealtimeToken = useCallback(async () => {
+    const response = await fetch(`/api/realtime/token?projectId=${projectId}`);
+    const data = await response.json();
+    return data.token;
+  }, [projectId]);
+
+  // Subscribe to Inngest Realtime updates (showcases real-time streaming!)
+  const { freshData } = useInngestSubscription({
+    refreshToken: fetchRealtimeToken,
+  });
+
+  // Process real-time messages from Inngest
+  useEffect(() => {
+    if (!freshData || freshData.length === 0) return;
+
+    freshData.forEach(
+      (message: { topic: string; data: Record<string, unknown> }) => {
+        if (message.topic === "processing") {
+          const data = message.data as typeof processingStatus;
+          setProcessingStatus(data);
+
+          // Track updates for each step (including completion messages)
+          if (data?.step && data?.message && data.step) {
+            setStepUpdates((prev) => {
+              const newMap = new Map(prev);
+              newMap.set(data.step as string, {
+                message: data.message as string,
+                status: (data.status as string) || "running",
+              });
+              return newMap;
+            });
+          }
+        }
+      },
+    );
+  }, [freshData]);
 
   if (!project) {
     return (
@@ -78,9 +124,14 @@ export default function ProjectDetailPage({
       <div className="grid gap-6">
         <ProjectStatusCard project={project} />
 
-        {/* Processing Steps */}
-        {(isProcessing || isCompleted) && (
-          <ProcessingSteps jobStatus={project.jobStatus} />
+        {/* Processing Steps - Only show while processing (hide when completed) */}
+        {isProcessing && (
+          <ProcessingFlow
+            jobStatus={project.jobStatus}
+            fileDuration={project.fileDuration}
+            createdAt={project.createdAt}
+            stepUpdates={stepUpdates}
+          />
         )}
 
         {/* Error Message */}
@@ -103,10 +154,11 @@ export default function ProjectDetailPage({
         {/* Results - Only show when completed */}
         {isCompleted && (
           <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="summary">Summary</TabsTrigger>
               <TabsTrigger value="moments">Key Moments</TabsTrigger>
               <TabsTrigger value="social">Social Posts</TabsTrigger>
+              <TabsTrigger value="hashtags">Hashtags</TabsTrigger>
               <TabsTrigger value="titles">Titles</TabsTrigger>
               <TabsTrigger value="transcript">Transcript</TabsTrigger>
             </TabsList>
@@ -201,80 +253,139 @@ export default function ProjectDetailPage({
 
             {/* Social Posts Tab */}
             <TabsContent value="social" className="space-y-4">
-              {project.titles && (
+              {project.socialPosts && (
                 <>
                   <Card>
                     <CardHeader>
-                      <CardTitle>Hashtags</CardTitle>
+                      <CardTitle>Twitter / X</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-3">
-                        {project.hashtags && (
-                          <>
-                            <div>
-                              <p className="text-sm font-medium mb-2">
-                                YouTube
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {project.hashtags.youtube.map((tag, idx) => (
-                                  <Badge key={idx} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium mb-2">
-                                Instagram
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {project.hashtags.instagram.map((tag, idx) => (
-                                  <Badge key={idx} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium mb-2">TikTok</p>
-                              <div className="flex flex-wrap gap-2">
-                                {project.hashtags.tiktok.map((tag, idx) => (
-                                  <Badge key={idx} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium mb-2">
-                                LinkedIn
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {project.hashtags.linkedin.map((tag, idx) => (
-                                  <Badge key={idx} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium mb-2">
-                                Twitter
-                              </p>
-                              <div className="flex flex-wrap gap-2">
-                                {project.hashtags.twitter.map((tag, idx) => (
-                                  <Badge key={idx} variant="outline">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </div>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.twitter}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>LinkedIn</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.linkedin}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Instagram</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.instagram}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>TikTok</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.tiktok}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>YouTube Description</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.youtube}
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Facebook</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap">
+                        {project.socialPosts.facebook}
+                      </p>
                     </CardContent>
                   </Card>
                 </>
+              )}
+            </TabsContent>
+
+            {/* Hashtags Tab */}
+            <TabsContent value="hashtags" className="space-y-4">
+              {project.hashtags && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Platform Hashtags</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium mb-2">YouTube</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.hashtags.youtube.map((tag, idx) => (
+                            <Badge key={`yt-${idx}`} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium mb-2">Instagram</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.hashtags.instagram.map((tag, idx) => (
+                            <Badge key={`ig-${idx}`} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium mb-2">TikTok</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.hashtags.tiktok.map((tag, idx) => (
+                            <Badge key={`tt-${idx}`} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium mb-2">LinkedIn</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.hashtags.linkedin.map((tag, idx) => (
+                            <Badge key={`li-${idx}`} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium mb-2">Twitter</p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.hashtags.twitter.map((tag, idx) => (
+                            <Badge key={`tw-${idx}`} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </TabsContent>
 
@@ -349,6 +460,68 @@ export default function ProjectDetailPage({
             <TabsContent value="transcript" className="space-y-4">
               {project.transcript && (
                 <>
+                  {/* Speaker View (if available) */}
+                  {project.transcript.speakers &&
+                    project.transcript.speakers.length > 0 && (
+                      <Card>
+                        <CardHeader>
+                          <CardTitle>Speaker Dialogue</CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            AssemblyAI identified{" "}
+                            {
+                              new Set(
+                                project.transcript.speakers.map(
+                                  (s) => s.speaker,
+                                ),
+                              ).size
+                            }{" "}
+                            speaker(s) in this podcast
+                          </p>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            {project.transcript.speakers.map(
+                              (utterance, idx) => (
+                                <div
+                                  key={`speaker-${idx}`}
+                                  className="flex gap-4 items-start"
+                                >
+                                  <Badge
+                                    variant={
+                                      utterance.speaker === "A"
+                                        ? "default"
+                                        : "secondary"
+                                    }
+                                    className="h-fit min-w-[80px] justify-center"
+                                  >
+                                    Speaker {utterance.speaker}
+                                  </Badge>
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs"
+                                      >
+                                        {new Date(utterance.start * 1000)
+                                          .toISOString()
+                                          .substr(11, 8)}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground">
+                                        {Math.round(utterance.confidence * 100)}
+                                        % confidence
+                                      </span>
+                                    </div>
+                                    <p>{utterance.text}</p>
+                                  </div>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                  {/* Full Transcript */}
                   <Card>
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -387,23 +560,6 @@ export default function ProjectDetailPage({
               )}
             </TabsContent>
           </Tabs>
-        )}
-
-        {/* Processing message */}
-        {isProcessing && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <div>
-                  <p className="font-medium">Processing your podcast...</p>
-                  <p className="text-sm text-muted-foreground">
-                    This page will update automatically as processing completes.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
     </div>

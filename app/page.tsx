@@ -58,7 +58,7 @@ export default function Home() {
           </h1>
 
           <p className="text-xl text-muted-foreground mb-8">
-            Upload your podcast audio or video and get AI-generated summaries,
+            Upload your podcast audio and get AI-generated summaries,
             transcripts, social posts, key moments, and more - all in minutes.
           </p>
 
@@ -175,7 +175,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Easy Upload</h3>
                 <p className="text-muted-foreground">
-                  Drag & drop your audio or video files. Supports MP3, WAV, MP4,
+                  Drag & drop your audio files. Supports MP3, WAV, M4A, FLAC,
                   and more formats.
                 </p>
               </CardContent>

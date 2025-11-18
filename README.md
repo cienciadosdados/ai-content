@@ -1,6 +1,6 @@
 # AI Podcast Assistant
 
-An AI-powered SaaS platform that transforms podcast audio/video files into actionable content including transcripts, summaries, social posts, key moments, titles, and hashtags.
+An AI-powered SaaS platform that transforms podcast audio files into actionable content including transcripts, summaries, social posts, key moments, titles, and hashtags.
 
 ## 🚀 Features
 
@@ -22,7 +22,7 @@ An AI-powered SaaS platform that transforms podcast audio/video files into actio
 - **Storage**: Vercel Blob
 - **Background Jobs**: Inngest
 - **File Upload**: react-dropzone, Vercel Blob SDK
-- **AI**: OpenAI Whisper & GPT (skeleton implementation ready)
+- **AI**: AssemblyAI (transcription, speaker labels, auto chapters)
 
 ## 📋 Prerequisites
 
@@ -33,7 +33,7 @@ An AI-powered SaaS platform that transforms podcast audio/video files into actio
   - [Convex](https://convex.dev) (for database)
   - [Clerk](https://clerk.com) (for authentication)
   - [Inngest](https://inngest.com) (for background jobs)
-  - [OpenAI](https://openai.com) (optional, for future AI implementation)
+  - [AssemblyAI](https://www.assemblyai.com) (for transcription)
 
 ## 🚀 Getting Started
 
@@ -62,6 +62,7 @@ Create a `.env.local` file with:
 - `CLERK_SECRET_KEY`
 - `INNGEST_EVENT_KEY`
 - `INNGEST_SIGNING_KEY`
+- `ASSEMBLYAI_API_KEY`
 
 ### 4. Set up Convex
 
@@ -119,12 +120,11 @@ Visit [http://localhost:3000/api/inngest](http://localhost:3000/api/inngest) to 
 
 ## 🔄 How It Works
 
-1. **Upload**: User uploads podcast file via drag & drop (max 100MB)
+1. **Upload**: User uploads podcast audio file via drag & drop (max 100MB)
 2. **Storage**: File is uploaded to Vercel Blob with progress tracking
 3. **Database**: Project record is created in Convex
 4. **Processing**: Inngest workflow is triggered with these steps:
    - **Linear Phase**:
-     - Extract audio (if video)
      - Transcribe audio
    - **Parallel Phase**:
      - Generate key moments
@@ -151,32 +151,31 @@ Built with shadcn/ui:
 
 ## 📝 Current Implementation
 
-This is an **MVP skeleton** with:
-- ✅ Complete upload flow with progress tracking
-- ✅ Real-time database integration
-- ✅ Workflow orchestration structure
-- ✅ Mock AI processing (returns placeholder data)
-- ⏳ OpenAI integration ready (needs API implementation)
+This MVP includes:
+- ✅ Complete upload flow with progress tracking (drag & drop)
+- ✅ Real-time database integration with Convex
+- ✅ Workflow orchestration with Inngest
+- ✅ **Real AI transcription with AssemblyAI**
+  - Speaker identification
+  - Auto-generated chapters (used for key moments!)
+  - Word-level timestamps
+- ⏳ Content generation (summary, social posts, etc.) uses mock data for now
 
 ## 🔮 Next Steps
 
 To complete the AI implementation:
 
-1. **Add OpenAI Whisper transcription**:
-   - Implement in `inngest/functions/podcast-processor.ts`
-   - Replace mock transcript with actual API call
+1. ~~**Add transcription**~~ ✅ **DONE with AssemblyAI!**
+   - Real transcription with speaker labels
+   - Auto chapters for key moments
 
-2. **Add GPT content generation**:
+2. **Add GPT content generation** (currently mock data):
    - Implement summary generation
    - Implement key moments extraction
    - Implement social posts generation
    - Implement titles & hashtags generation
 
-3. **Add FFmpeg for video processing**:
-   - Extract audio from video files
-   - Store extracted audio in Vercel Blob
-
-4. **Enhance features**:
+3. **Enhance features**:
    - Pagination for projects list
    - Search & filter projects
    - Export functionality

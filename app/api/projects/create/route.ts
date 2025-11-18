@@ -15,7 +15,8 @@ export async function POST(request: Request) {
     }
 
     // Parse request body
-    const { fileUrl, fileName, fileSize, mimeType } = await request.json();
+    const { fileUrl, fileName, fileSize, mimeType, fileDuration } =
+      await request.json();
 
     if (!fileUrl || !fileName) {
       return NextResponse.json(
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
       inputUrl: fileUrl,
       fileName,
       fileSize: fileSize || 0,
+      fileDuration: fileDuration, // Audio duration in seconds
       fileFormat: fileExtension,
       mimeType: mimeType || "application/octet-stream",
     });

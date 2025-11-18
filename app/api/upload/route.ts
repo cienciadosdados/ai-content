@@ -23,22 +23,24 @@ export async function POST(request: Request): Promise<NextResponse> {
 
         return {
           allowedContentTypes: [
-            // Audio formats
+            // Audio formats only
             "audio/mpeg",
             "audio/mp3",
-            "audio/wav",
-            "audio/x-wav",
+            "audio/mp4", // M4A files often report as audio/mp4
             "audio/m4a",
             "audio/x-m4a",
+            "audio/wav",
+            "audio/x-wav",
+            "audio/wave",
             "audio/aac",
+            "audio/aacp",
             "audio/ogg",
+            "audio/opus",
+            "audio/webm",
             "audio/flac",
-            // Video formats
-            "video/mp4",
-            "video/webm",
-            "video/quicktime",
-            "video/x-msvideo",
-            "video/x-matroska",
+            "audio/x-flac",
+            "audio/3gpp",
+            "audio/3gpp2",
           ],
           addRandomSuffix: true,
           maximumSizeInBytes: MAX_FILE_SIZE,
