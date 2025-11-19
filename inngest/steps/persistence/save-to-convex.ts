@@ -1,11 +1,12 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import type { Summary } from "../../schemas/ai-outputs";
-import type { Titles } from "../../schemas/ai-outputs";
-import type { SocialPosts } from "../../schemas/ai-outputs";
-import type { Hashtags } from "../../schemas/ai-outputs";
-import { publishStepComplete, type PublishFunction } from "../../lib/realtime";
+import type {
+  Hashtags,
+  SocialPosts,
+  Summary,
+  Titles,
+} from "../../schemas/ai-outputs";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
@@ -30,10 +31,16 @@ type GeneratedContent = {
   youtubeTimestamps: YouTubeTimestamp[];
 };
 
+type PublishFunction = (args: {
+  channel: string;
+  topic: string;
+  data: Record<string, unknown>;
+}) => Promise<Record<string, unknown>>;
+
 export async function saveResultsToConvex(
   projectId: Id<"projects">,
   results: GeneratedContent,
-  publish: PublishFunction
+  _publish: PublishFunction
 ): Promise<void> {
   await convex.mutation(api.projects.saveGeneratedContent, {
     projectId,
@@ -45,20 +52,10 @@ export async function saveResultsToConvex(
     youtubeTimestamps: results.youtubeTimestamps,
   });
 
-  // Update project status to completed
   await convex.mutation(api.projects.updateProjectStatus, {
     projectId,
     status: "completed",
   });
-
-  // Publish final completion
-  await publishStepComplete(
-    publish,
-    projectId,
-    "",
-    "All processing completed!",
-    100
-  );
 
   console.log("Podcast processing completed for project:", projectId);
 }

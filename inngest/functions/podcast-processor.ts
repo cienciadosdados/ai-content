@@ -1,15 +1,15 @@
-import { inngest } from "@/inngest/client";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
-import { transcribeWithAssemblyAI } from "../steps/transcription/assemblyai";
-import { generateKeyMoments } from "../steps/ai-generation/key-moments";
-import { generateSummary } from "../steps/ai-generation/summary";
-import { generateSocialPosts } from "../steps/ai-generation/social-posts";
-import { generateTitles } from "../steps/ai-generation/titles";
+import { inngest } from "@/inngest/client";
+import { REALTIME_TOPICS } from "../lib/realtime-topics";
 import { generateHashtags } from "../steps/ai-generation/hashtags";
+import { generateKeyMoments } from "../steps/ai-generation/key-moments";
+import { generateSocialPosts } from "../steps/ai-generation/social-posts";
+import { generateSummary } from "../steps/ai-generation/summary";
+import { generateTitles } from "../steps/ai-generation/titles";
 import { generateYouTubeTimestamps } from "../steps/ai-generation/youtube-timestamps";
 import { saveResultsToConvex } from "../steps/persistence/save-to-convex";
-import { REALTIME_TOPICS } from "../lib/realtime-topics";
+import { transcribeWithAssemblyAI } from "../steps/transcription/assemblyai";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
@@ -44,7 +44,7 @@ export const podcastProcessor = inngest.createFunction(
     });
 
     const transcript = await step.run("transcribe-audio", () =>
-      transcribeWithAssemblyAI(fileUrl, projectId, publish)
+      transcribeWithAssemblyAI(fileUrl, projectId, publish),
     );
 
     await publish({
@@ -100,10 +100,10 @@ export const podcastProcessor = inngest.createFunction(
           hashtags,
           youtubeTimestamps,
         },
-        publish
-      )
+        publish,
+      ),
     );
 
     return { success: true, projectId };
-  }
+  },
 );

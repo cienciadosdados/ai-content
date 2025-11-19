@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+"use server";
+
 import { auth } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
@@ -6,26 +7,27 @@ import { inngest } from "@/inngest/client";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 
-export async function POST(request: Request) {
+interface CreateProjectInput {
+  fileUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  fileDuration?: number;
+}
+
+export async function createProjectAction(input: CreateProjectInput) {
   try {
-    // Authenticate user
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new Error("Unauthorized");
     }
 
-    // Parse request body
-    const { fileUrl, fileName, fileSize, mimeType, fileDuration } =
-      await request.json();
+    const { fileUrl, fileName, fileSize, mimeType, fileDuration } = input;
 
     if (!fileUrl || !fileName) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      throw new Error("Missing required fields");
     }
 
-    // Extract file metadata
     const fileExtension = fileName.split(".").pop() || "unknown";
 
     // Create project in Convex
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
       inputUrl: fileUrl,
       fileName,
       fileSize: fileSize || 0,
-      fileDuration: fileDuration, // Audio duration in seconds
+      fileDuration,
       fileFormat: fileExtension,
       mimeType: mimeType || "application/octet-stream",
     });
@@ -52,14 +54,9 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ projectId });
+    return { success: true, projectId };
   } catch (error) {
     console.error("Error creating project:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
-      { status: 500 }
-    );
+    throw error;
   }
 }

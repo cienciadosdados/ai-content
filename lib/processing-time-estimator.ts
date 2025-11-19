@@ -33,9 +33,9 @@ export function formatTimeEstimate(seconds: number): string {
  */
 export function formatTimeRange(
   bestCase: number,
-  conservative: number
+  conservative: number,
 ): string {
   return `${formatTimeEstimate(bestCase)} - ${formatTimeEstimate(
-    conservative
+    conservative,
   )}`;
 }

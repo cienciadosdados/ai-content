@@ -27,4 +27,3 @@ export async function getAudioDuration(file: File): Promise<number> {
 export function estimateDurationFromSize(fileSize: number): number {
   return Math.floor((fileSize / (1024 * 1024)) * 8);
 }
-

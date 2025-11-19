@@ -38,8 +38,8 @@ export function SummaryTab({ summary }: SummaryTabProps) {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {summary.bullets.map((bullet, idx) => (
-              <li key={idx} className="flex items-start gap-2">
+            {summary.bullets.map((bullet) => (
+              <li key={bullet} className="flex items-start gap-2">
                 <span className="text-primary mt-1">•</span>
                 <span>{bullet}</span>
               </li>
@@ -54,8 +54,8 @@ export function SummaryTab({ summary }: SummaryTabProps) {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {summary.insights.map((insight, idx) => (
-              <li key={idx} className="flex items-start gap-2">
+            {summary.insights.map((insight) => (
+              <li key={insight} className="flex items-start gap-2">
                 <span className="text-primary mt-1">💡</span>
                 <span>{insight}</span>
               </li>
@@ -66,4 +66,3 @@ export function SummaryTab({ summary }: SummaryTabProps) {
     </div>
   );
 }
-

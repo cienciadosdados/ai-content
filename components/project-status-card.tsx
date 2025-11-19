@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { formatFileSize, formatSmartDate, formatDuration } from "@/lib/format";
+import { formatDuration, formatFileSize, formatSmartDate } from "@/lib/format";
 import { getStatusVariant } from "@/lib/status-utils";
 
 interface ProjectStatusCardProps {

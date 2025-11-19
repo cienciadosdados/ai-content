@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type YouTubeTimestamp = {
   timestamp: string;
@@ -76,9 +76,9 @@ export function YouTubeTimestampsTab({
           <div className="space-y-2 border-t pt-4">
             <h4 className="text-sm font-semibold">Individual Timestamps:</h4>
             <div className="space-y-2">
-              {timestamps.map((timestamp, index) => (
+              {timestamps.map((timestamp) => (
                 <div
-                  key={index}
+                  key={timestamp.timestamp}
                   className="flex items-start gap-3 p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
                 >
                   <code className="text-sm font-mono font-semibold text-primary min-w-[60px]">

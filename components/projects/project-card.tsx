@@ -1,13 +1,13 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { FileAudio, FileVideo, ChevronRight } from "lucide-react";
+import { ChevronRight, FileAudio, FileVideo } from "lucide-react";
 import Link from "next/link";
-import type { Doc } from "@/convex/_generated/dataModel";
-import { formatFileSize, formatSmartDate, formatDuration } from "@/lib/format";
-import { getStatusVariant, getStatusIcon } from "@/lib/status-utils";
 import { CompactProgress } from "@/components/projects/compact-progress";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import type { Doc } from "@/convex/_generated/dataModel";
+import { formatDuration, formatFileSize, formatSmartDate } from "@/lib/format";
+import { getStatusIcon, getStatusVariant } from "@/lib/status-utils";
 import { cn } from "@/lib/utils";
 
 interface ProjectCardProps {
@@ -27,16 +27,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
       return "Transcribing";
     }
 
-    const contentSteps = [
-      project.jobStatus.keyMoments,
-      project.jobStatus.summary,
-      project.jobStatus.social,
-      project.jobStatus.titles,
-      project.jobStatus.hashtags,
-      project.jobStatus.youtubeTimestamps,
-    ];
-    const completedSteps = contentSteps.filter((s) => s === "completed").length;
-    
     // Just say "Generating" without the count
     return "Generating";
   };

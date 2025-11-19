@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PodcastUploader } from "@/components/podcast-uploader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function UploadPage() {
   return (

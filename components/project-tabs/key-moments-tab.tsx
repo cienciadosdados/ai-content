@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface KeyMomentsTabProps {
   keyMoments: {
@@ -19,9 +19,9 @@ export function KeyMomentsTab({ keyMoments }: KeyMomentsTabProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {keyMoments.map((moment, idx) => (
+          {keyMoments.map((moment) => (
             <div
-              key={idx}
+              key={`${moment.timestamp}-${moment.text.slice(0, 20)}`}
               className="flex items-start gap-4 p-4 border rounded-lg"
             >
               <Badge variant="secondary" className="mt-1">
@@ -40,4 +40,3 @@ export function KeyMomentsTab({ keyMoments }: KeyMomentsTabProps) {
     </Card>
   );
 }
-

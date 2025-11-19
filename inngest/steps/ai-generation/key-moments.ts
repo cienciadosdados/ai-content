@@ -1,5 +1,5 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
 import type { step as InngestStep } from "inngest";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 type KeyMoment = {
   time: string;
@@ -10,7 +10,7 @@ type KeyMoment = {
 
 export async function generateKeyMoments(
   _step: typeof InngestStep,
-  transcript: TranscriptWithExtras
+  transcript: TranscriptWithExtras,
 ): Promise<KeyMoment[]> {
   console.log("Generating key moments from AssemblyAI chapters");
 
@@ -24,7 +24,7 @@ export async function generateKeyMoments(
     const seconds = Math.floor(startSeconds % 60);
 
     const timeString = `${String(hours).padStart(2, "0")}:${String(
-      minutes
+      minutes,
     ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
     return {

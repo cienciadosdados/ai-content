@@ -1,9 +1,9 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
-import { hashtagsSchema, type Hashtags } from "../../schemas/ai-outputs";
-import { zodResponseFormat } from "openai/helpers/zod";
 import type { step as InngestStep } from "inngest";
-import { openai } from "../../lib/openai-client";
 import type OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { openai } from "../../lib/openai-client";
+import { type Hashtags, hashtagsSchema } from "../../schemas/ai-outputs";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 const HASHTAGS_SYSTEM_PROMPT =
   "You are a social media growth expert who understands platform algorithms and trending hashtag strategies. You create hashtag sets that maximize reach and engagement.";
@@ -55,14 +55,14 @@ All hashtags should include the # symbol and be relevant to the actual content d
 
 export async function generateHashtags(
   step: typeof InngestStep,
-  transcript: TranscriptWithExtras
+  transcript: TranscriptWithExtras,
 ): Promise<Hashtags> {
   console.log("Generating hashtags with GPT");
 
   try {
     // Bind OpenAI method to preserve client context (required per Inngest docs)
     const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
+      openai.chat.completions,
     );
 
     const response = (await step.ai.wrap(
@@ -75,7 +75,7 @@ export async function generateHashtags(
           { role: "user", content: buildHashtagsPrompt(transcript) },
         ],
         response_format: zodResponseFormat(hashtagsSchema, "hashtags"),
-      }
+      },
     )) as OpenAI.Chat.Completions.ChatCompletion;
 
     const content = response.choices[0]?.message?.content;

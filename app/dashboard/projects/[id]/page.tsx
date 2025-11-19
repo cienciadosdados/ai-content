@@ -1,25 +1,24 @@
 "use client";
 
-import { use, useState, useCallback, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { ProjectStatusCard } from "@/components/project-status-card";
+import { Loader2 } from "lucide-react";
+import { use, useEffect, useState } from "react";
 import { ProcessingFlow } from "@/components/processing-flow";
-import { SummaryTab } from "@/components/project-tabs/summary-tab";
+import { TabContent } from "@/components/project-detail/tab-content";
+import { ProjectStatusCard } from "@/components/project-status-card";
+import { HashtagsTab } from "@/components/project-tabs/hashtags-tab";
 import { KeyMomentsTab } from "@/components/project-tabs/key-moments-tab";
 import { SocialPostsTab } from "@/components/project-tabs/social-posts-tab";
-import { HashtagsTab } from "@/components/project-tabs/hashtags-tab";
+import { SummaryTab } from "@/components/project-tabs/summary-tab";
 import { TitlesTab } from "@/components/project-tabs/titles-tab";
 import { TranscriptTab } from "@/components/project-tabs/transcript-tab";
 import { YouTubeTimestampsTab } from "@/components/project-tabs/youtube-timestamps-tab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2 } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
-import { useInngestSubscription } from "@inngest/realtime/hooks";
-import { REALTIME_TOPICS } from "@/inngest/lib/realtime-topics";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useProjectRealtime } from "@/hooks/use-project-realtime";
 
 type PhaseStatus = "pending" | "running" | "completed";
 
@@ -32,88 +31,31 @@ export default function ProjectDetailPage({
   const { id } = use(params);
   const projectId = id as Id<"projects">;
 
-  // Fetch project data from Convex (ONLY for persisted data, NOT for realtime status)
   const project = useQuery(api.projects.getProject, { projectId });
+  const { transcriptionStatus, generationStatus, hasRealtimeUpdates } =
+    useProjectRealtime(projectId);
 
-  // Track 2-phase processing status via Inngest Realtime (NOT Convex)
-  const [transcriptionStatus, setTranscriptionStatus] =
+  const [localTranscriptionStatus, setLocalTranscriptionStatus] =
     useState<PhaseStatus>("pending");
-  const [generationStatus, setGenerationStatus] =
+  const [localGenerationStatus, setLocalGenerationStatus] =
     useState<PhaseStatus>("pending");
 
-  // Track if we've received any realtime updates
-  const [hasRealtimeUpdates, setHasRealtimeUpdates] = useState(false);
-
-  // Track processed message IDs to avoid duplicates
-  const [processedMessageIds] = useState(() => new Set<string>());
-
-  // Fetch Inngest Realtime subscription token
-  const fetchRealtimeToken = useCallback(async () => {
-    console.log("🔑 Fetching Inngest realtime token for project:", projectId);
-    const response = await fetch(`/api/realtime/token?projectId=${projectId}`);
-    const data = await response.json();
-    console.log("🔑 Token received:", data.token ? "✓" : "✗");
-    return data.token;
-  }, [projectId]);
-
-  // Subscribe to Inngest Realtime updates (showcasing Inngest, NOT Convex)
-  const { data } = useInngestSubscription({
-    refreshToken: fetchRealtimeToken,
-  });
-
-  // Process Inngest realtime messages (4 topics: transcription start/done, generation start/done)
+  // Sync realtime status
   useEffect(() => {
-    if (!data || data.length === 0) return;
+    setLocalTranscriptionStatus(transcriptionStatus);
+    setLocalGenerationStatus(generationStatus);
+  }, [transcriptionStatus, generationStatus]);
 
-    data.forEach(
-      (message: { topic: string; data: Record<string, unknown> }) => {
-        const messageId = `${message.topic}-${JSON.stringify(message.data)}`;
-
-        // Skip if already processed
-        if (processedMessageIds.has(messageId)) {
-          return;
-        }
-
-        processedMessageIds.add(messageId);
-        setHasRealtimeUpdates(true);
-        console.log("📡 Inngest realtime message:", {
-          topic: message.topic,
-          data: message.data,
-        });
-
-        // Handle transcription phase
-        if (message.topic === REALTIME_TOPICS.TRANSCRIPTION_START) {
-          console.log("🎤 Transcription started");
-          setTranscriptionStatus("running");
-        } else if (message.topic === REALTIME_TOPICS.TRANSCRIPTION_DONE) {
-          console.log("✅ Transcription completed");
-          setTranscriptionStatus("completed");
-        }
-        // Handle generation phase
-        else if (message.topic === REALTIME_TOPICS.GENERATION_START) {
-          console.log("🤖 AI Generation started (6 outputs)");
-          setGenerationStatus("running");
-        } else if (message.topic === REALTIME_TOPICS.GENERATION_DONE) {
-          console.log("✅ AI Generation completed");
-          setGenerationStatus("completed");
-        }
-      },
-    );
-  }, [data, processedMessageIds]);
-
-  // Fallback to Convex job status if no realtime updates yet
-  // This ensures UI doesn't get stuck showing "pending" if realtime connection is slow
+  // Fallback to Convex job status if no realtime updates
   useEffect(() => {
     if (hasRealtimeUpdates || !project) return;
 
-    // Map Convex job status to phase status
     if (project.jobStatus?.transcription === "running") {
-      setTranscriptionStatus("running");
+      setLocalTranscriptionStatus("running");
     } else if (project.jobStatus?.transcription === "completed") {
-      setTranscriptionStatus("completed");
+      setLocalTranscriptionStatus("completed");
     }
 
-    // Check if any generation job is running or completed
     const generationJobs = [
       project.jobStatus?.keyMoments,
       project.jobStatus?.summary,
@@ -131,9 +73,9 @@ export default function ProjectDetailPage({
     );
 
     if (allGenerationCompleted) {
-      setGenerationStatus("completed");
+      setLocalGenerationStatus("completed");
     } else if (anyGenerationRunning) {
-      setGenerationStatus("running");
+      setLocalGenerationStatus("running");
     }
   }, [project, hasRealtimeUpdates]);
 
@@ -147,7 +89,6 @@ export default function ProjectDetailPage({
     );
   }
 
-  // Check if user owns this project
   if (project.userId !== userId) {
     return (
       <div className="container max-w-6xl mx-auto py-10 px-4">
@@ -165,30 +106,26 @@ export default function ProjectDetailPage({
   const isProcessing = project.status === "processing";
   const isCompleted = project.status === "completed";
   const hasFailed = project.status === "failed";
-  const showGenerating = isProcessing && generationStatus === "running";
+  const showGenerating = isProcessing && localGenerationStatus === "running";
 
   return (
     <div className="container max-w-6xl mx-auto py-10 px-4">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Project Details</h1>
       </div>
 
-      {/* Project Info */}
       <div className="grid gap-6">
         <ProjectStatusCard project={project} />
 
-        {/* Processing Flow - Only show while processing */}
         {isProcessing && (
           <ProcessingFlow
-            transcriptionStatus={transcriptionStatus}
-            generationStatus={generationStatus}
+            transcriptionStatus={localTranscriptionStatus}
+            generationStatus={localGenerationStatus}
             fileDuration={project.fileDuration}
             createdAt={project.createdAt}
           />
         )}
 
-        {/* Error Message */}
         {hasFailed && project.error && (
           <Card className="border-destructive">
             <CardHeader>
@@ -205,7 +142,6 @@ export default function ProjectDetailPage({
           </Card>
         )}
 
-        {/* Results - Show skeleton while generating, populate when completed */}
         {(showGenerating || isCompleted) && (
           <Tabs defaultValue="summary" className="w-full">
             <TabsList className="flex flex-col md:flex-row md:inline-flex w-full md:w-auto h-auto">
@@ -235,137 +171,64 @@ export default function ProjectDetailPage({
               </TabsTrigger>
             </TabsList>
 
-            {/* Summary Tab */}
             <TabsContent value="summary" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.summary && <SummaryTab summary={project.summary} />
-              )}
+              <TabContent isLoading={showGenerating} data={project.summary}>
+                {project.summary && <SummaryTab summary={project.summary} />}
+              </TabContent>
             </TabsContent>
 
-            {/* Key Moments Tab */}
             <TabsContent value="moments" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.keyMoments && (
+              <TabContent isLoading={showGenerating} data={project.keyMoments}>
+                {project.keyMoments && (
                   <KeyMomentsTab keyMoments={project.keyMoments} />
-                )
-              )}
+                )}
+              </TabContent>
             </TabsContent>
 
-            {/* YouTube Timestamps Tab */}
             <TabsContent value="youtube-timestamps" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.youtubeTimestamps && (
+              <TabContent
+                isLoading={showGenerating}
+                data={project.youtubeTimestamps}
+              >
+                {project.youtubeTimestamps && (
                   <YouTubeTimestampsTab
                     timestamps={project.youtubeTimestamps}
                   />
-                )
-              )}
+                )}
+              </TabContent>
             </TabsContent>
 
-            {/* Social Posts Tab */}
             <TabsContent value="social" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.socialPosts && (
+              <TabContent isLoading={showGenerating} data={project.socialPosts}>
+                {project.socialPosts && (
                   <SocialPostsTab socialPosts={project.socialPosts} />
-                )
-              )}
+                )}
+              </TabContent>
             </TabsContent>
 
-            {/* Hashtags Tab */}
             <TabsContent value="hashtags" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.hashtags && <HashtagsTab hashtags={project.hashtags} />
-              )}
+              <TabContent isLoading={showGenerating} data={project.hashtags}>
+                {project.hashtags && (
+                  <HashtagsTab hashtags={project.hashtags} />
+                )}
+              </TabContent>
             </TabsContent>
 
-            {/* Titles Tab */}
             <TabsContent value="titles" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.titles && <TitlesTab titles={project.titles} />
-              )}
+              <TabContent isLoading={showGenerating} data={project.titles}>
+                {project.titles && <TitlesTab titles={project.titles} />}
+              </TabContent>
             </TabsContent>
 
-            {/* Transcript Tab */}
             <TabsContent value="transcript" className="space-y-4">
-              {showGenerating ? (
-                <Card>
-                  <CardHeader>
-                    <Skeleton className="h-6 w-48" />
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                </Card>
-              ) : (
-                project.transcript && (
+              <TabContent isLoading={showGenerating} data={project.transcript}>
+                {project.transcript && (
                   <TranscriptTab
                     transcript={project.transcript}
                     captions={project.captions}
                   />
-                )
-              )}
+                )}
+              </TabContent>
             </TabsContent>
           </Tabs>
         )}

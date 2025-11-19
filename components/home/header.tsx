@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Sparkles, Home } from "lucide-react";
-import Link from "next/link";
 import { SignInButton, UserButton, useAuth } from "@clerk/nextjs";
+import { Home, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { DashboardNav } from "@/components/dashboard-nav";
+import { Button } from "@/components/ui/button";
 
 type HeaderProps = {
   showDashboardNav?: boolean;

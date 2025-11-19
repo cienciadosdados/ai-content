@@ -1,9 +1,9 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
-import { titlesSchema, type Titles } from "../../schemas/ai-outputs";
-import { zodResponseFormat } from "openai/helpers/zod";
 import type { step as InngestStep } from "inngest";
-import { openai } from "../../lib/openai-client";
 import type OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { openai } from "../../lib/openai-client";
+import { type Titles, titlesSchema } from "../../schemas/ai-outputs";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 const TITLES_SYSTEM_PROMPT =
   "You are an expert in SEO, content marketing, and viral content creation. You understand what makes titles clickable while maintaining credibility and search rankings.";
@@ -53,14 +53,14 @@ Make titles compelling, accurate, and optimized for discovery.`;
 
 export async function generateTitles(
   step: typeof InngestStep,
-  transcript: TranscriptWithExtras
+  transcript: TranscriptWithExtras,
 ): Promise<Titles> {
   console.log("Generating title suggestions with GPT-4");
 
   try {
     // Bind OpenAI method to preserve client context (required per Inngest docs)
     const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
+      openai.chat.completions,
     );
 
     const response = (await step.ai.wrap(
@@ -73,7 +73,7 @@ export async function generateTitles(
           { role: "user", content: buildTitlesPrompt(transcript) },
         ],
         response_format: zodResponseFormat(titlesSchema, "titles"),
-      }
+      },
     )) as OpenAI.Chat.Completions.ChatCompletion;
 
     const titlesContent = response.choices[0]?.message?.content;

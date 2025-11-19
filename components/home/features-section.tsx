@@ -1,13 +1,13 @@
-import { Card, CardContent } from "@/components/ui/card";
 import {
   FileText,
-  Sparkles,
-  Zap,
-  MessageSquare,
   Hash,
-  Upload,
   type LucideIcon,
+  MessageSquare,
+  Sparkles,
+  Upload,
+  Zap,
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Feature {
   icon: LucideIcon;

@@ -19,7 +19,7 @@ export default defineSchema({
       v.literal("uploaded"),
       v.literal("processing"),
       v.literal("completed"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
 
     // Detailed job status for UI progress tracking
@@ -28,51 +28,51 @@ export default defineSchema({
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       keyMoments: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       summary: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       captions: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       social: v.optional(
         v.union(
           v.literal("pending"),
           v.literal("running"),
           v.literal("completed"),
-          v.literal("failed")
-        )
+          v.literal("failed"),
+        ),
       ),
       titles: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       hashtags: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
       youtubeTimestamps: v.union(
         v.literal("pending"),
         v.literal("running"),
         v.literal("completed"),
-        v.literal("failed")
+        v.literal("failed"),
       ),
     }),
 
@@ -86,7 +86,7 @@ export default defineSchema({
         totalProcessingTime: v.optional(v.number()), // milliseconds
         transcriptionTokens: v.optional(v.number()),
         generationTokens: v.optional(v.number()),
-      })
+      }),
     ),
 
     // Error handling
@@ -96,7 +96,7 @@ export default defineSchema({
         step: v.string(),
         timestamp: v.number(),
         details: v.optional(v.any()),
-      })
+      }),
     ),
 
     // AI-generated outputs
@@ -115,10 +115,10 @@ export default defineSchema({
                   word: v.string(),
                   start: v.number(),
                   end: v.number(),
-                })
-              )
+                }),
+              ),
             ),
-          })
+          }),
         ),
         // Speaker information from AssemblyAI
         speakers: v.optional(
@@ -129,10 +129,10 @@ export default defineSchema({
               end: v.number(), // seconds
               text: v.string(),
               confidence: v.number(), // 0-1
-            })
-          )
+            }),
+          ),
         ),
-      })
+      }),
     ),
 
     keyMoments: v.optional(
@@ -142,8 +142,8 @@ export default defineSchema({
           timestamp: v.number(), // seconds
           text: v.string(),
           description: v.string(),
-        })
-      )
+        }),
+      ),
     ),
 
     summary: v.optional(
@@ -152,14 +152,14 @@ export default defineSchema({
         bullets: v.array(v.string()),
         insights: v.array(v.string()),
         tldr: v.string(),
-      })
+      }),
     ),
 
     captions: v.optional(
       v.object({
         srtUrl: v.string(),
         rawText: v.string(),
-      })
+      }),
     ),
 
     socialPosts: v.optional(
@@ -170,7 +170,7 @@ export default defineSchema({
         tiktok: v.string(),
         youtube: v.string(),
         facebook: v.string(),
-      })
+      }),
     ),
 
     titles: v.optional(
@@ -179,7 +179,7 @@ export default defineSchema({
         youtubeLong: v.array(v.string()),
         podcastTitles: v.array(v.string()),
         seoKeywords: v.array(v.string()),
-      })
+      }),
     ),
 
     hashtags: v.optional(
@@ -189,7 +189,7 @@ export default defineSchema({
         tiktok: v.array(v.string()),
         linkedin: v.array(v.string()),
         twitter: v.array(v.string()),
-      })
+      }),
     ),
 
     youtubeTimestamps: v.optional(
@@ -197,8 +197,8 @@ export default defineSchema({
         v.object({
           timestamp: v.string(), // "00:00" or "1:02:57"
           description: v.string(),
-        })
-      )
+        }),
+      ),
     ),
 
     // Timestamps

@@ -1,17 +1,16 @@
 "use client";
 
+import { FileAudio, Upload } from "lucide-react";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, FileAudio } from "lucide-react";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 interface UploadDropzoneProps {
   onFileSelect: (file: File) => void;
   disabled?: boolean;
-  maxSize?: number; // in bytes, default 100MB
+  maxSize?: number;
 }
-
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 export function UploadDropzone({
   onFileSelect,

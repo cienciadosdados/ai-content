@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { upload } from "@vercel/blob/client";
 import { useAuth } from "@clerk/nextjs";
+import { upload } from "@vercel/blob/client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import { createProjectAction } from "@/app/actions/projects";
+import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/components/upload-dropzone";
 import { UploadProgress } from "@/components/upload-progress";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { getAudioDuration, estimateDurationFromSize } from "@/lib/audio-utils";
+import { estimateDurationFromSize, getAudioDuration } from "@/lib/audio-utils";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "completed" | "error";
 
@@ -37,14 +38,12 @@ export function PodcastUploader({
     setUploadProgress(0);
     setError(null);
 
-    // Extract audio duration using HTML5 Audio API
     try {
       const duration = await getAudioDuration(file);
       setFileDuration(duration);
       console.log(`Audio duration extracted: ${duration} seconds`);
     } catch (err) {
       console.warn("Could not extract duration from audio file:", err);
-      // Fallback: estimate from file size
       const estimated = estimateDurationFromSize(file.size);
       setFileDuration(estimated);
       console.log(`Using estimated duration: ${estimated} seconds`);
@@ -61,13 +60,8 @@ export function PodcastUploader({
       setUploadStatus("uploading");
       setUploadProgress(0);
 
-      // Step 1: Upload file to Vercel Blob
+      // Upload file to Vercel Blob
       const blob = await upload(selectedFile.name, selectedFile, {
-        // Note: Client uploads MUST use access: "public"
-        // Security is enforced at the application level:
-        // - URLs have random suffixes (hard to guess)
-        // - Projects are only accessible to authenticated owners
-        // - Convex queries validate userId
         access: "public",
         handleUploadUrl: "/api/upload",
         onUploadProgress: ({ percentage }) => {
@@ -78,30 +72,18 @@ export function PodcastUploader({
       setUploadStatus("processing");
       setUploadProgress(100);
 
-      // Step 2: Create project in Convex and trigger Inngest
-      const response = await fetch("/api/projects/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileUrl: blob.url,
-          fileName: selectedFile.name,
-          fileSize: selectedFile.size,
-          mimeType: selectedFile.type,
-          fileDuration: fileDuration, // Include duration for accurate time estimation
-        }),
+      // Create project using server action
+      const { projectId } = await createProjectAction({
+        fileUrl: blob.url,
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        mimeType: selectedFile.type,
+        fileDuration,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create project");
-      }
-
-      const { projectId } = await response.json();
-
       toast.success("Upload completed! Processing your podcast...");
-
       setUploadStatus("completed");
 
-      // Call custom callback if provided, otherwise redirect
       if (onUploadComplete) {
         onUploadComplete(projectId);
       } else {

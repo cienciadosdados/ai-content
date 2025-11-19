@@ -1,9 +1,9 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
+import { CheckCircle2, Clock, FileAudio, Loader2, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileAudio, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
-import { formatFileSize, formatDuration } from "@/lib/format";
+import { Progress } from "@/components/ui/progress";
+import { formatDuration, formatFileSize } from "@/lib/format";
 
 interface UploadProgressProps {
   fileName: string;
@@ -22,7 +22,6 @@ export function UploadProgress({
   status,
   error,
 }: UploadProgressProps) {
-
   return (
     <Card>
       <CardContent className="p-4">

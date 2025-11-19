@@ -1,11 +1,11 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { SocialIcon } from "react-social-icons";
-import { Copy, Check } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import { SocialIcon } from "react-social-icons";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface SocialPostsTabProps {
   socialPosts: {
@@ -19,47 +19,47 @@ interface SocialPostsTabProps {
 }
 
 const PLATFORMS = [
-  { 
-    key: "twitter" as const, 
+  {
+    key: "twitter" as const,
     title: "Twitter / X",
     url: "https://twitter.com",
     bgColor: "bg-black/5",
-    hoverColor: "hover:bg-black/10"
+    hoverColor: "hover:bg-black/10",
   },
-  { 
-    key: "linkedin" as const, 
+  {
+    key: "linkedin" as const,
     title: "LinkedIn",
     url: "https://linkedin.com",
     bgColor: "bg-blue-50",
-    hoverColor: "hover:bg-blue-100"
+    hoverColor: "hover:bg-blue-100",
   },
-  { 
-    key: "instagram" as const, 
+  {
+    key: "instagram" as const,
     title: "Instagram",
     url: "https://instagram.com",
     bgColor: "bg-pink-50",
-    hoverColor: "hover:bg-pink-100"
+    hoverColor: "hover:bg-pink-100",
   },
-  { 
-    key: "tiktok" as const, 
+  {
+    key: "tiktok" as const,
     title: "TikTok",
     url: "https://tiktok.com",
     bgColor: "bg-slate-50",
-    hoverColor: "hover:bg-slate-100"
+    hoverColor: "hover:bg-slate-100",
   },
-  { 
-    key: "youtube" as const, 
+  {
+    key: "youtube" as const,
     title: "YouTube",
     url: "https://youtube.com",
     bgColor: "bg-red-50",
-    hoverColor: "hover:bg-red-100"
+    hoverColor: "hover:bg-red-100",
   },
-  { 
-    key: "facebook" as const, 
+  {
+    key: "facebook" as const,
     title: "Facebook",
     url: "https://facebook.com",
     bgColor: "bg-blue-50",
-    hoverColor: "hover:bg-blue-100"
+    hoverColor: "hover:bg-blue-100",
   },
 ];
 
@@ -76,7 +76,7 @@ export function SocialPostsTab({ socialPosts }: SocialPostsTabProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {PLATFORMS.map((platform) => (
-        <Card 
+        <Card
           key={platform.key}
           className={`transition-all ${platform.bgColor} border-2 hover:shadow-md`}
         >
@@ -84,21 +84,21 @@ export function SocialPostsTab({ socialPosts }: SocialPostsTabProps) {
             {/* Header with Icon and Title */}
             <div className="flex items-start gap-4 mb-4">
               <div className="shrink-0">
-                <SocialIcon 
+                <SocialIcon
                   url={platform.url}
                   style={{ height: 48, width: 48 }}
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-lg mb-1">{platform.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ready to post
-                </p>
+                <p className="text-sm text-muted-foreground">Ready to post</p>
               </div>
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleCopy(platform.title, socialPosts[platform.key])}
+                onClick={() =>
+                  handleCopy(platform.title, socialPosts[platform.key])
+                }
                 className="shrink-0"
               >
                 {copiedPlatform === platform.title ? (
@@ -129,4 +129,3 @@ export function SocialPostsTab({ socialPosts }: SocialPostsTabProps) {
     </div>
   );
 }
-

@@ -2,14 +2,14 @@
  * Centralized status utilities for project status
  */
 
-import type { Doc } from "@/convex/_generated/dataModel";
 import {
-  Clock,
   CheckCircle2,
-  XCircle,
+  Clock,
   Loader2,
   type LucideIcon,
+  XCircle,
 } from "lucide-react";
+import type { Doc } from "@/convex/_generated/dataModel";
 
 export type ProjectStatus = Doc<"projects">["status"];
 
@@ -17,7 +17,7 @@ export type ProjectStatus = Doc<"projects">["status"];
  * Get the appropriate badge variant for a project status
  */
 export function getStatusVariant(
-  status: ProjectStatus
+  status: ProjectStatus,
 ): "default" | "secondary" | "destructive" {
   switch (status) {
     case "uploaded":

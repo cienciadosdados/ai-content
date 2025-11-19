@@ -1,11 +1,11 @@
 "use client";
 
-import { usePreloadedQuery } from "convex/react";
 import type { Preloaded } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { PageHeader } from "@/components/projects/page-header";
+import { usePreloadedQuery } from "convex/react";
 import { EmptyState } from "@/components/projects/empty-state";
+import { PageHeader } from "@/components/projects/page-header";
 import { ProjectCard } from "@/components/projects/project-card";
+import type { api } from "@/convex/_generated/api";
 
 interface ProjectsListProps {
   preloadedProjects: Preloaded<typeof api.projects.listUserProjects>;
@@ -33,4 +33,3 @@ export function ProjectsList({ preloadedProjects }: ProjectsListProps) {
     </div>
   );
 }
-

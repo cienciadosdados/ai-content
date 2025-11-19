@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface HashtagsTabProps {
   hashtags: {
@@ -46,4 +46,3 @@ export function HashtagsTab({ hashtags }: HashtagsTabProps) {
     </Card>
   );
 }
-

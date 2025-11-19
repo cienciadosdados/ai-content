@@ -1,9 +1,9 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
-import { socialPostsSchema, type SocialPosts } from "../../schemas/ai-outputs";
-import { zodResponseFormat } from "openai/helpers/zod";
 import type { step as InngestStep } from "inngest";
-import { openai } from "../../lib/openai-client";
 import type OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { openai } from "../../lib/openai-client";
+import { type SocialPosts, socialPostsSchema } from "../../schemas/ai-outputs";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 const SOCIAL_SYSTEM_PROMPT =
   "You are a viral social media marketing expert who understands each platform's unique audience, tone, and best practices. You create platform-optimized content that drives engagement and grows audiences.";
@@ -96,7 +96,7 @@ export async function generateSocialPosts(
     )) as OpenAI.Chat.Completions.ChatCompletion;
 
     const content = response.choices[0]?.message?.content;
-    let socialPosts = content
+    const socialPosts = content
       ? socialPostsSchema.parse(JSON.parse(content))
       : {
           twitter: "New podcast episode!",
@@ -112,7 +112,7 @@ export async function generateSocialPosts(
       console.warn(
         `Twitter post exceeded 280 chars (${socialPosts.twitter.length}), truncating...`
       );
-      socialPosts.twitter = socialPosts.twitter.substring(0, 277) + "...";
+      socialPosts.twitter = `${socialPosts.twitter.substring(0, 277)}...`;
     }
 
     return socialPosts;

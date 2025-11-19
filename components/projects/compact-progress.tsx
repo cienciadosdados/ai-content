@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Progress } from "@/components/ui/progress";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { estimateAssemblyAITime } from "@/lib/processing-time-estimator";
+import { Progress } from "@/components/ui/progress";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { estimateAssemblyAITime } from "@/lib/processing-time-estimator";
 
 interface CompactProgressProps {
   jobStatus: Doc<"projects">["jobStatus"];

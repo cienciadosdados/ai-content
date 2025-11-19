@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TranscriptTabProps {
   transcript: {
@@ -34,16 +34,21 @@ export function TranscriptTab({ transcript, captions }: TranscriptTabProps) {
             <CardTitle>Speaker Dialogue</CardTitle>
             <p className="text-sm text-muted-foreground">
               AssemblyAI identified{" "}
-              {new Set(transcript.speakers.map((s) => s.speaker)).size} speaker(s)
-              in this podcast
+              {new Set(transcript.speakers.map((s) => s.speaker)).size}{" "}
+              speaker(s) in this podcast
             </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {transcript.speakers.map((utterance, idx) => (
-                <div key={`speaker-${idx}`} className="flex gap-4 items-start">
+              {transcript.speakers.map((utterance) => (
+                <div
+                  key={`${utterance.start}-${utterance.speaker}`}
+                  className="flex gap-4 items-start"
+                >
                   <Badge
-                    variant={utterance.speaker === "A" ? "default" : "secondary"}
+                    variant={
+                      utterance.speaker === "A" ? "default" : "secondary"
+                    }
                     className="h-fit min-w-[80px] justify-center"
                   >
                     Speaker {utterance.speaker}
@@ -104,4 +109,3 @@ export function TranscriptTab({ transcript, captions }: TranscriptTabProps) {
     </div>
   );
 }
-

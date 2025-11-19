@@ -2,14 +2,14 @@ import { AssemblyAI } from "assemblyai";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import {
-  type TranscriptWithExtras,
-  type AssemblyAISegment,
-  type AssemblyAIChapter,
-  type AssemblyAIUtterance,
-  type AssemblyAIWord,
+import type { PublishFunction } from "../../lib/realtime";
+import type {
+  AssemblyAIChapter,
+  AssemblyAISegment,
+  AssemblyAIUtterance,
+  AssemblyAIWord,
+  TranscriptWithExtras,
 } from "../../types/assemblyai";
-import { type PublishFunction } from "../../lib/realtime";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL || "");
 const assemblyai = new AssemblyAI({
@@ -19,7 +19,7 @@ const assemblyai = new AssemblyAI({
 export async function transcribeWithAssemblyAI(
   audioUrl: string,
   projectId: Id<"projects">,
-  publish: PublishFunction
+  _publish: PublishFunction,
 ): Promise<TranscriptWithExtras> {
   await convex.mutation(api.projects.updateJobStatus, {
     projectId,
@@ -41,7 +41,7 @@ export async function transcribeWithAssemblyAI(
     // Check for errors
     if (transcriptResponse.status === "error") {
       throw new Error(
-        transcriptResponse.error || "AssemblyAI transcription failed"
+        transcriptResponse.error || "AssemblyAI transcription failed",
       );
     }
 
@@ -62,7 +62,7 @@ export async function transcribeWithAssemblyAI(
         response.segments?.length || 0
       } segments, ${response.chapters?.length || 0} chapters, ${
         response.utterances?.length || 0
-      } speakers`
+      } speakers`,
     );
 
     // Transform AssemblyAI response to our schema
@@ -95,7 +95,7 @@ export async function transcribeWithAssemblyAI(
         end: utterance.end / 1000,
         text: utterance.text,
         confidence: utterance.confidence,
-      })
+      }),
     );
 
     // Save transcript with speaker info to Convex

@@ -22,7 +22,7 @@ export function formatDuration(seconds: number): string {
 
   if (hours > 0) {
     return `${hours}:${String(minutes).padStart(2, "0")}:${String(
-      secs
+      secs,
     ).padStart(2, "0")}`;
   }
   return `${minutes}:${String(secs).padStart(2, "0")}`;

@@ -1,6 +1,6 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
 
 // ============================================================================
 // MUTATIONS
@@ -59,7 +59,7 @@ export const updateProjectStatus = mutation({
       v.literal("uploaded"),
       v.literal("processing"),
       v.literal("completed"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
   },
   handler: async (ctx, args) => {
@@ -91,14 +91,14 @@ export const updateJobStatus = mutation({
       v.literal("social"),
       v.literal("titles"),
       v.literal("hashtags"),
-      v.literal("youtubeTimestamps")
+      v.literal("youtubeTimestamps"),
     ),
     status: v.union(
       v.literal("pending"),
       v.literal("running"),
       v.literal("completed"),
       v.literal("failed"),
-      v.literal("skipped")
+      v.literal("skipped"),
     ),
   },
   handler: async (ctx, args) => {
@@ -137,10 +137,10 @@ export const saveTranscript = mutation({
                 word: v.string(),
                 start: v.number(),
                 end: v.number(),
-              })
-            )
+              }),
+            ),
           ),
-        })
+        }),
       ),
       speakers: v.optional(
         v.array(
@@ -150,8 +150,8 @@ export const saveTranscript = mutation({
             end: v.number(),
             text: v.string(),
             confidence: v.number(),
-          })
-        )
+          }),
+        ),
       ),
     }),
   },
@@ -177,8 +177,8 @@ export const saveGeneratedContent = mutation({
           timestamp: v.number(),
           text: v.string(),
           description: v.string(),
-        })
-      )
+        }),
+      ),
     ),
     summary: v.optional(
       v.object({
@@ -186,7 +186,7 @@ export const saveGeneratedContent = mutation({
         bullets: v.array(v.string()),
         insights: v.array(v.string()),
         tldr: v.string(),
-      })
+      }),
     ),
     socialPosts: v.optional(
       v.object({
@@ -196,7 +196,7 @@ export const saveGeneratedContent = mutation({
         tiktok: v.string(),
         youtube: v.string(),
         facebook: v.string(),
-      })
+      }),
     ),
     titles: v.optional(
       v.object({
@@ -204,7 +204,7 @@ export const saveGeneratedContent = mutation({
         youtubeLong: v.array(v.string()),
         podcastTitles: v.array(v.string()),
         seoKeywords: v.array(v.string()),
-      })
+      }),
     ),
     hashtags: v.optional(
       v.object({
@@ -213,15 +213,15 @@ export const saveGeneratedContent = mutation({
         tiktok: v.array(v.string()),
         linkedin: v.array(v.string()),
         twitter: v.array(v.string()),
-      })
+      }),
     ),
     youtubeTimestamps: v.optional(
       v.array(
         v.object({
           timestamp: v.string(),
           description: v.string(),
-        })
-      )
+        }),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -315,7 +315,7 @@ export const listUserProjects = query({
       v.object({
         numItems: v.number(),
         cursor: v.optional(v.string()),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -343,14 +343,14 @@ export const getProjectsByStatus = query({
       v.literal("uploaded"),
       v.literal("processing"),
       v.literal("completed"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
   },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("projects")
       .withIndex("by_user_and_status", (q) =>
-        q.eq("userId", args.userId).eq("status", args.status)
+        q.eq("userId", args.userId).eq("status", args.status),
       )
       .order("desc")
       .collect();

@@ -1,7 +1,7 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
 import type { step as InngestStep } from "inngest";
-import { openai } from "../../lib/openai-client";
 import type OpenAI from "openai";
+import { openai } from "../../lib/openai-client";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 type YouTubeTimestamp = {
   timestamp: string;
@@ -21,23 +21,23 @@ function formatYouTubeTimestamp(seconds: number): string {
   if (hours > 0) {
     // H:MM:SS format (no leading zero on hours)
     return `${hours}:${String(minutes).padStart(2, "0")}:${String(
-      secs
+      secs,
     ).padStart(2, "0")}`;
   } else {
     // MM:SS format
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
       2,
-      "0"
+      "0",
     )}`;
   }
 }
 
 export async function generateYouTubeTimestamps(
   step: typeof InngestStep,
-  transcript: TranscriptWithExtras
+  transcript: TranscriptWithExtras,
 ): Promise<YouTubeTimestamp[]> {
   console.log(
-    "Generating YouTube timestamps from AssemblyAI chapters with AI-enhanced titles"
+    "Generating YouTube timestamps from AssemblyAI chapters with AI-enhanced titles",
   );
 
   // Use AssemblyAI chapters for accurate timing
@@ -45,7 +45,7 @@ export async function generateYouTubeTimestamps(
 
   if (!chapters || chapters.length === 0) {
     throw new Error(
-      "No chapters available from AssemblyAI. Cannot generate YouTube timestamps."
+      "No chapters available from AssemblyAI. Cannot generate YouTube timestamps.",
     );
   }
 
@@ -96,7 +96,7 @@ Example:
 
   // Bind OpenAI method to preserve client context (required per Inngest docs)
   const createCompletion = openai.chat.completions.create.bind(
-    openai.chat.completions
+    openai.chat.completions,
   );
 
   const response = (await step.ai.wrap(
@@ -116,7 +116,7 @@ Example:
         },
       ],
       max_completion_tokens: 1500,
-    }
+    },
   )) as OpenAI.Chat.Completions.ChatCompletion;
 
   const content = response.choices[0]?.message?.content || '{"titles":[]}';
@@ -142,7 +142,7 @@ Example:
 
   console.log(
     `Generated ${aiTimestamps.length} YouTube timestamps:`,
-    aiTimestamps.slice(0, 3).map((t) => `${t.timestamp}s: ${t.description}`)
+    aiTimestamps.slice(0, 3).map((t) => `${t.timestamp}s: ${t.description}`),
   );
 
   // Format timestamps in YouTube format

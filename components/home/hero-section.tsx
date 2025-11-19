@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
-import Link from "next/link";
 import { SignInButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
+import { Sparkles } from "lucide-react";
+import Link from "next/link";
 import { PodcastUploader } from "@/components/podcast-uploader";
+import { Button } from "@/components/ui/button";
 
 export async function HeroSection() {
   const { userId } = await auth();
@@ -25,8 +25,8 @@ export async function HeroSection() {
           </h1>
 
           <p className="text-xl text-muted-foreground mb-8">
-            Upload your podcast audio and get AI-generated summaries, transcripts,
-            social posts, key moments, and more - all in minutes.
+            Upload your podcast audio and get AI-generated summaries,
+            transcripts, social posts, key moments, and more - all in minutes.
           </p>
         </div>
 
@@ -35,9 +35,7 @@ export async function HeroSection() {
             <PodcastUploader compact />
             <div className="text-center">
               <Link href="/dashboard/projects">
-                <Button variant="outline">
-                  View All Projects
-                </Button>
+                <Button variant="outline">View All Projects</Button>
               </Link>
             </div>
           </div>

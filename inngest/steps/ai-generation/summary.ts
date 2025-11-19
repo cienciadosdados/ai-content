@@ -1,9 +1,9 @@
-import type { TranscriptWithExtras } from "../../types/assemblyai";
-import { summarySchema, type Summary } from "../../schemas/ai-outputs";
-import { zodResponseFormat } from "openai/helpers/zod";
 import type { step as InngestStep } from "inngest";
-import { openai } from "../../lib/openai-client";
 import type OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { openai } from "../../lib/openai-client";
+import { type Summary, summarySchema } from "../../schemas/ai-outputs";
+import type { TranscriptWithExtras } from "../../types/assemblyai";
 
 const SUMMARY_SYSTEM_PROMPT =
   "You are an expert podcast content analyst and marketing strategist. Your summaries are engaging, insightful, and highlight the most valuable takeaways for listeners.";
@@ -51,14 +51,14 @@ Be specific, engaging, and valuable. Focus on what makes this podcast unique and
 
 export async function generateSummary(
   step: typeof InngestStep,
-  transcript: TranscriptWithExtras
+  transcript: TranscriptWithExtras,
 ): Promise<Summary> {
   console.log("Generating podcast summary with GPT-4");
 
   try {
     // Bind OpenAI method to preserve client context (required per Inngest docs)
     const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
+      openai.chat.completions,
     );
 
     const response = (await step.ai.wrap(
@@ -71,7 +71,7 @@ export async function generateSummary(
           { role: "user", content: buildSummaryPrompt(transcript) },
         ],
         response_format: zodResponseFormat(summarySchema, "summary"),
-      }
+      },
     )) as OpenAI.Chat.Completions.ChatCompletion;
 
     const content = response.choices[0]?.message?.content;
