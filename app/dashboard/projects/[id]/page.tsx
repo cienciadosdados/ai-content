@@ -1,8 +1,16 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, Protect } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { AlertCircle, Edit2, Loader2, Save, Trash2, X } from "lucide-react";
+import {
+  AlertCircle,
+  Edit2,
+  Loader2,
+  Save,
+  Trash2,
+  X,
+  Lock,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { use, useState } from "react";
 import { toast } from "sonner";
@@ -27,7 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { PhaseStatus } from "@/lib/types";
-import type { PlanName } from "@/lib/tier-config";
+import { FEATURES } from "@/lib/tier-config";
 
 export default function ProjectDetailPage({
   params,
@@ -245,6 +253,10 @@ export default function ProjectDetailPage({
                 {project.jobErrors?.keyMoments && (
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
+                <Protect
+                  feature={FEATURES.KEY_MOMENTS}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
               <TabsTrigger
                 value="youtube-timestamps"
@@ -254,6 +266,10 @@ export default function ProjectDetailPage({
                 {project.jobErrors?.youtubeTimestamps && (
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
+                <Protect
+                  feature={FEATURES.YOUTUBE_TIMESTAMPS}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
               <TabsTrigger
                 value="social"
@@ -263,6 +279,10 @@ export default function ProjectDetailPage({
                 {project.jobErrors?.socialPosts && (
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
+                <Protect
+                  feature={FEATURES.SOCIAL_POSTS}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
               <TabsTrigger
                 value="hashtags"
@@ -272,6 +292,10 @@ export default function ProjectDetailPage({
                 {project.jobErrors?.hashtags && (
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
+                <Protect
+                  feature={FEATURES.HASHTAGS}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
               <TabsTrigger
                 value="titles"
@@ -281,9 +305,20 @@ export default function ProjectDetailPage({
                 {project.jobErrors?.titles && (
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
+                <Protect
+                  feature={FEATURES.TITLES}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
-              <TabsTrigger value="transcript" className="w-full md:w-auto">
-                Transcript
+              <TabsTrigger
+                value="speakers"
+                className="w-full md:w-auto flex items-center gap-2"
+              >
+                Speaker Dialogue
+                <Protect
+                  feature={FEATURES.SPEAKER_DIARIZATION}
+                  fallback={<Lock className="h-3 w-3 text-muted-foreground" />}
+                />
               </TabsTrigger>
             </TabsList>
 
@@ -371,7 +406,7 @@ export default function ProjectDetailPage({
               </TabContent>
             </TabsContent>
 
-            <TabsContent value="transcript" className="space-y-4">
+            <TabsContent value="speakers" className="space-y-4">
               <TabContent isLoading={showGenerating} data={project.transcript}>
                 {project.transcript && (
                   <TranscriptTab transcript={project.transcript} />

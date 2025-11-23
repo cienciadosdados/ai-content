@@ -40,9 +40,10 @@ export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
 /**
  * Feature names corresponding to Clerk billing features
  * These should match the feature identifiers in Clerk Dashboard
+ *
+ * Note: Transcription is NOT a feature - it's core functionality available to all plans
  */
 export const FEATURES = {
-  TRANSCRIPTION: "transcription",
   SUMMARY: "summary",
   SOCIAL_POSTS: "social_posts",
   TITLES: "titles",
@@ -57,18 +58,18 @@ export type FeatureName = (typeof FEATURES)[keyof typeof FEATURES];
 /**
  * Features available to each plan
  * Maps plan names to their available features
+ *
+ * Note: Transcription is available to ALL plans as core functionality
  */
 export const PLAN_FEATURES: Record<PlanName, FeatureName[]> = {
-  free: [FEATURES.TRANSCRIPTION, FEATURES.SUMMARY],
+  free: [FEATURES.SUMMARY],
   pro: [
-    FEATURES.TRANSCRIPTION,
     FEATURES.SUMMARY,
     FEATURES.SOCIAL_POSTS,
     FEATURES.TITLES,
     FEATURES.HASHTAGS,
   ],
   ultra: [
-    FEATURES.TRANSCRIPTION,
     FEATURES.SUMMARY,
     FEATURES.SOCIAL_POSTS,
     FEATURES.TITLES,
@@ -96,4 +97,3 @@ export const PLAN_PRICES: Record<PlanName, string> = {
   pro: "$29/month",
   ultra: "$69/month",
 };
-

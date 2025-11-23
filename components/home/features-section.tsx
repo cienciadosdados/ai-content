@@ -6,6 +6,7 @@ import {
   Sparkles,
   Upload,
   Zap,
+  Users,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -17,40 +18,40 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   {
-    icon: FileText,
-    title: "AI Transcription",
+    icon: Sparkles,
+    title: "AI-Powered Analysis",
     description:
-      "Get accurate transcripts with timestamps and speaker identification using OpenAI Whisper.",
+      "Advanced audio analysis using AssemblyAI to understand your podcast content and power all AI features.",
   },
   {
-    icon: Sparkles,
+    icon: FileText,
     title: "Smart Summaries",
     description:
-      "Generate comprehensive summaries, key points, and insights from your podcast content.",
-  },
-  {
-    icon: Zap,
-    title: "Key Moments",
-    description:
-      "Automatically identify and timestamp the most important moments in your podcast.",
+      "Generate comprehensive summaries with key points and insights from your podcast content.",
   },
   {
     icon: MessageSquare,
     title: "Social Posts",
     description:
-      "Generate platform-optimized social media posts for Twitter, LinkedIn, Instagram, and more.",
+      "Generate platform-optimized social media posts for Twitter, LinkedIn, Instagram, TikTok, YouTube, and Facebook.",
   },
   {
     icon: Hash,
-    title: "Smart Hashtags & Titles",
+    title: "Titles & Hashtags",
     description:
-      "Get SEO-optimized titles and relevant hashtags for every platform automatically.",
+      "Get SEO-optimized titles and platform-specific hashtags automatically for maximum reach.",
   },
   {
-    icon: Upload,
-    title: "Easy Upload",
+    icon: Zap,
+    title: "Key Moments & Chapters",
     description:
-      "Drag & drop your audio files. Supports MP3, WAV, M4A, FLAC, and more formats.",
+      "Automatically identify viral moments and generate YouTube timestamps for better engagement.",
+  },
+  {
+    icon: Users,
+    title: "Speaker Dialogue",
+    description:
+      "Full transcript with speaker identification - see exactly who said what and when (ULTRA only).",
   },
 ];
 

@@ -7,8 +7,10 @@
  * features available in their new plan that weren't generated when the project
  * was processed on their old plan.
  *
- * Example: User had Free plan (only Transcript + Summary), upgrades to Pro.
+ * Example: User had Free plan (only Summary), upgrades to Pro.
  * This will generate: Social Posts, Titles, Hashtags all at once.
+ * 
+ * Note: Transcription is NOT a feature - it's available to all users.
  */
 
 import { inngest } from "@/inngest/client";

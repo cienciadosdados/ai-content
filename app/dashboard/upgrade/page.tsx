@@ -15,8 +15,10 @@
  */
 
 import { PricingTable } from "@clerk/nextjs";
-import { ArrowLeft, Lock, Zap } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+import { ArrowLeft, Lock, Zap, Crown, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 interface UpgradePageProps {
   searchParams: {
@@ -68,10 +70,23 @@ function getUpgradeMessage(reason?: string, feature?: string) {
   }
 }
 
+/**
+ * Detect current plan using Clerk's has() method
+ */
+function getCurrentPlan(authObj: Awaited<ReturnType<typeof auth>>) {
+  const { has } = authObj;
+  if (has?.({ plan: "ultra" })) return "ultra";
+  if (has?.({ plan: "pro" })) return "pro";
+  return "free";
+}
+
 export default async function UpgradePage({ searchParams }: UpgradePageProps) {
   const { reason, feature } = searchParams;
   const message = getUpgradeMessage(reason, feature);
   const Icon = message.icon;
+
+  const authObj = await auth();
+  const currentPlan = getCurrentPlan(authObj);
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,7 +111,23 @@ export default async function UpgradePage({ searchParams }: UpgradePageProps) {
             <Icon className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-4xl font-bold mb-4">{message.title}</h1>
-          <p className="text-xl text-muted-foreground">{message.description}</p>
+          <p className="text-xl text-muted-foreground mb-6">
+            {message.description}
+          </p>
+
+          {/* Current Plan Badge */}
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <span>Current plan:</span>
+            <Badge
+              variant={currentPlan === "ultra" ? "default" : "secondary"}
+              className="gap-1"
+            >
+              {currentPlan === "ultra" && <Crown className="h-3 w-3" />}
+              {currentPlan === "free" && "Free"}
+              {currentPlan === "pro" && "Pro"}
+              {currentPlan === "ultra" && "Ultra"}
+            </Badge>
+          </div>
         </div>
 
         {/* Pricing Table */}
@@ -159,18 +190,21 @@ export default async function UpgradePage({ searchParams }: UpgradePageProps) {
           <h2 className="text-2xl font-bold mb-6">Why Upgrade?</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="p-6 border rounded-lg">
+              <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">More Projects</h3>
               <p className="text-sm text-muted-foreground">
                 Create up to 30 projects with Pro or unlimited with Ultra
               </p>
             </div>
             <div className="p-6 border rounded-lg">
+              <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Larger Files</h3>
               <p className="text-sm text-muted-foreground">
                 Upload files up to 200MB (Pro) or 3GB (Ultra)
               </p>
             </div>
             <div className="p-6 border rounded-lg">
+              <CheckCircle2 className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Advanced AI</h3>
               <p className="text-sm text-muted-foreground">
                 Access social posts, YouTube timestamps, and key moments
@@ -182,4 +216,3 @@ export default async function UpgradePage({ searchParams }: UpgradePageProps) {
     </div>
   );
 }
-

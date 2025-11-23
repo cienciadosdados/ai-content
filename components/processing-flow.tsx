@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { ChevronDown, FileText, Lock, Sparkles } from "lucide-react";
+import { ChevronDown, FileText, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GenerationOutputItem } from "@/components/processing-flow/generation-output-item";
 import { PhaseCard } from "@/components/processing-flow/phase-card";
@@ -16,13 +16,7 @@ import {
   formatTimeRange,
 } from "@/lib/processing-time-estimator";
 import type { PhaseStatus } from "@/lib/types";
-import {
-  PLAN_FEATURES,
-  FEATURES,
-  PLAN_NAMES,
-  type FeatureName,
-  type PlanName,
-} from "@/lib/tier-config";
+import { PLAN_FEATURES, FEATURES, type FeatureName } from "@/lib/tier-config";
 import { getMinimumPlanForFeature } from "@/lib/tier-utils";
 
 interface ProcessingFlowProps {
@@ -138,13 +132,13 @@ export function ProcessingFlow({
   }, [isGenerating, unlockedOutputs.length]);
 
   const getTranscriptionDescription = useCallback(() => {
-    if (isTranscribing) return "Converting audio to text with AssemblyAI...";
-    if (transcriptionComplete) return "Transcription complete!";
-    return "Preparing transcription...";
+    if (isTranscribing) return "AI is analyzing your podcast...";
+    if (transcriptionComplete) return "Analysis complete!";
+    return "Preparing analysis...";
   }, [isTranscribing, transcriptionComplete]);
 
   const getGenerationDescription = useCallback(() => {
-    if (!transcriptionComplete) return "Waiting for transcription...";
+    if (!transcriptionComplete) return "Waiting for analysis...";
     const unlockedCount = unlockedOutputs.length;
     if (isGenerating)
       return `Generating ${unlockedCount} AI output${unlockedCount !== 1 ? "s" : ""} in parallel...`;
@@ -161,7 +155,7 @@ export function ProcessingFlow({
     <div className="space-y-6">
       <PhaseCard
         icon={<FileText className="h-6 w-6 text-primary" />}
-        title="Phase 1: Transcription"
+        title="Phase 1: AI Analysis"
         description={getTranscriptionDescription()}
         status={transcriptionStatus}
         isActive={isTranscribing}
@@ -186,7 +180,7 @@ export function ProcessingFlow({
       >
         {isGenerating && (
           <div className="space-y-3 pt-2">
-            {processedOutputs.map((output, idx) => {
+            {unlockedOutputs.map((output, idx) => {
               const isActive = idx === currentOutputIndex;
 
               return (
@@ -205,8 +199,8 @@ export function ProcessingFlow({
                 <span className="font-semibold text-primary">
                   Powered by Inngest
                 </span>{" "}
-                — AI is generating {processedOutputs.length} output
-                {processedOutputs.length > 1 ? "s" : ""} simultaneously
+                — AI is generating {unlockedOutputs.length} output
+                {unlockedOutputs.length > 1 ? "s" : ""} simultaneously
               </p>
             </div>
           </div>
@@ -214,7 +208,7 @@ export function ProcessingFlow({
 
         {generationComplete && (
           <div className="flex flex-wrap items-center gap-2 pt-2">
-            {processedOutputs.map((output) => (
+            {unlockedOutputs.map((output) => (
               <Badge key={output.name} variant="default" className="text-xs">
                 {output.name}
               </Badge>

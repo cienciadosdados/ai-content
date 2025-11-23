@@ -2,14 +2,17 @@
  * Podcast Processing Workflow - Main Orchestration Function
  *
  * This is the core of the application - a durable, observable workflow that:
- * 1. Transcribes audio using AssemblyAI
+ * 1. Analyzes audio using AssemblyAI (transcription for AI use - runs for ALL plans)
  * 2. Generates AI content in parallel based on user's plan (FREE/PRO/ULTRA)
  * 3. Saves all results to Convex for real-time UI updates
  *
  * Feature Gating by Plan:
- * - FREE: Transcription + Summary only
+ * - FREE: Summary only
  * - PRO: + Social Posts, Titles, Hashtags
- * - ULTRA: + YouTube Timestamps, Key Moments, Speaker Diarization
+ * - ULTRA: + YouTube Timestamps, Key Moments, Speaker Diarization + Full Transcript Access
+ *
+ * Note: Audio analysis (transcription) runs for ALL users to power AI features,
+ * but transcript text is only accessible to ULTRA users via Speaker Dialogue tab.
  *
  * Inngest Benefits for This Use Case:
  * - Durable execution: If OpenAI times out, the step retries automatically
@@ -105,7 +108,7 @@ export const podcastProcessor = inngest.createFunction(
       // Parallel Pattern: Promise.allSettled allows individual failures without blocking others
       // Performance: ~60s total vs. ~300s sequential (5x faster)
       // Each function can fail independently - we save whatever succeeds
-      
+
       // Determine which jobs to run based on plan
       const jobs: Promise<any>[] = [];
       const jobNames: string[] = [];
@@ -118,10 +121,10 @@ export const podcastProcessor = inngest.createFunction(
       if (plan === "pro" || plan === "ultra") {
         jobs.push(generateSocialPosts(step, transcript));
         jobNames.push("socialPosts");
-        
+
         jobs.push(generateTitles(step, transcript));
         jobNames.push("titles");
-        
+
         jobs.push(generateHashtags(step, transcript));
         jobNames.push("hashtags");
       } else {
@@ -132,11 +135,13 @@ export const podcastProcessor = inngest.createFunction(
       if (plan === "ultra") {
         jobs.push(generateKeyMoments(transcript));
         jobNames.push("keyMoments");
-        
+
         jobs.push(generateYouTubeTimestamps(step, transcript));
         jobNames.push("youtubeTimestamps");
       } else {
-        console.log(`Skipping key moments and YouTube timestamps for ${plan} plan`);
+        console.log(
+          `Skipping key moments and YouTube timestamps for ${plan} plan`
+        );
       }
 
       // Run all enabled jobs in parallel
@@ -145,7 +150,7 @@ export const podcastProcessor = inngest.createFunction(
       // Extract successful results based on plan
       // Build results object dynamically based on what was run
       const generatedContent: Record<string, any> = {};
-      
+
       results.forEach((result, idx) => {
         const jobName = jobNames[idx];
         if (result.status === "fulfilled") {

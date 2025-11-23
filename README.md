@@ -4,14 +4,19 @@ An AI-powered SaaS platform that transforms podcast audio files into actionable 
 
 ## 🚀 Features
 
-- **Drag & Drop Upload**: Easy file upload with progress tracking (up to 100MB)
-- **AI Transcription**: Accurate transcripts with timestamps using OpenAI Whisper
+- **Drag & Drop Upload**: Easy file upload with progress tracking
+- **AI Analysis**: Podcast audio is analyzed to power all AI features
 - **Smart Summaries**: Comprehensive summaries with key points and insights
-- **Key Moments**: Automatically identified important timestamps
-- **Social Content**: Platform-optimized posts for Twitter, LinkedIn, Instagram, TikTok, etc.
-- **SEO Optimization**: Auto-generated titles and hashtags
+- **Key Moments**: Automatically identified important timestamps (ULTRA only)
+- **Social Content**: Platform-optimized posts for Twitter, LinkedIn, Instagram, TikTok, etc. (PRO+)
+- **SEO Optimization**: Auto-generated titles and hashtags (PRO+)
+- **Speaker Dialogue**: Full transcript with speaker identification (ULTRA only)
+- **YouTube Timestamps**: Auto-generated chapter markers (ULTRA only)
 - **Real-time Updates**: Live processing status updates via Convex
 - **Modern UI**: Built with Next.js 15, shadcn/ui, and Tailwind CSS
+- **Tiered Pricing**: FREE, PRO, and ULTRA plans with Clerk Billing
+
+**Note:** Audio transcription happens for all users to power AI features, but the transcript text itself is only accessible to ULTRA users via the Speaker Dialogue tab.
 
 ## 🛠️ Tech Stack
 
@@ -122,18 +127,19 @@ Visit [http://localhost:3000/api/inngest](http://localhost:3000/api/inngest) to 
 
 ## 🔄 How It Works
 
-1. **Upload**: User uploads podcast audio file via drag & drop (max 100MB)
+1. **Upload**: User uploads podcast audio file via drag & drop
 2. **Storage**: File is uploaded to Vercel Blob with progress tracking
 3. **Database**: Project record is created in Convex
 4. **Processing**: Inngest workflow is triggered with these steps:
    - **Linear Phase**:
-     - Transcribe audio
-   - **Parallel Phase**:
-     - Generate key moments
-     - Generate summary
-     - Generate captions (SRT)
-     - Generate titles
-     - Generate hashtags
+     - Analyze audio (transcription for AI use)
+   - **Parallel Phase** (based on user's plan):
+     - Generate summary (FREE+)
+     - Generate social posts (PRO+)
+     - Generate titles & hashtags (PRO+)
+     - Generate key moments (ULTRA)
+     - Generate YouTube timestamps (ULTRA)
+     - Save speaker dialogue data (ULTRA)
    - **Join Phase**:
      - Save all results to Convex
      - Update project status
