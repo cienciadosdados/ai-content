@@ -8,7 +8,7 @@
 ![AssemblyAI](https://img.shields.io/badge/AssemblyAI-Transcription-green)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT-teal)
 
-## Stop Spending Hours on Content Distribution - Let AI Do It
+## Stop Spending Hours on Extracting Information from Podcasts - Let AI Do It!
 
 Upload your podcast once. Get platform-optimized content for 6 social networks automatically.
 
