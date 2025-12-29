@@ -9,7 +9,9 @@
  * https://clerk.com/docs/nextjs/guides/billing/for-b2c
  */
 
-import type { Auth } from "@clerk/nextjs/server";
+import type { auth } from "@clerk/nextjs/server";
+
+type Auth = Awaited<ReturnType<typeof auth>>;
 import { convex } from "@/lib/convex-client";
 import { api } from "@/convex/_generated/api";
 import {
