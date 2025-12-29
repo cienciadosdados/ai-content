@@ -22,16 +22,16 @@ export function CompactProgress({
 }: CompactProgressProps) {
   const [progress, setProgress] = useState(0);
 
-  const isTranscribing = jobStatus.transcription === "running";
+  const isTranscribing = jobStatus?.transcription === "running";
 
   // Count completed content generation steps (all 6 outputs)
   const contentSteps = [
-    jobStatus.keyMoments,
-    jobStatus.summary,
-    jobStatus.social,
-    jobStatus.titles,
-    jobStatus.hashtags,
-    jobStatus.youtubeTimestamps,
+    jobStatus?.keyMoments,
+    jobStatus?.summary,
+    jobStatus?.social,
+    jobStatus?.titles,
+    jobStatus?.hashtags,
+    jobStatus?.youtubeTimestamps,
   ];
   const completedSteps = contentSteps.filter((s) => s === "completed").length;
   const totalSteps = contentSteps.length;
