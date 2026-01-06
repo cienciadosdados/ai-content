@@ -46,7 +46,7 @@ TRANSCRIPT (first 3000 chars):
 ${transcript.text.substring(0, 3000)}...
 
 ${
-  transcript.chapters.length > 0
+  transcript.chapters && transcript.chapters.length > 0
     ? `\nAUTO-DETECTED CHAPTERS:\n${transcript.chapters
         .map((ch, idx) => `${idx + 1}. ${ch.headline} - ${ch.summary}`)
         .join("\n")}`
@@ -100,25 +100,15 @@ export async function generateSummary(
   console.log("Generating podcast summary with GPT-4");
 
   try {
-    // Bind OpenAI method to preserve `this` context (required for step.ai.wrap)
-    const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
-    );
-
-    // Call OpenAI with Structured Outputs for type-safe response
-    const response = (await step.ai.wrap(
-      "generate-summary-with-gpt",
-      createCompletion,
-      {
-        model: "gpt-5-mini", // Fast and cost-effective model
-        messages: [
-          { role: "system", content: SUMMARY_SYSTEM_PROMPT },
-          { role: "user", content: buildSummaryPrompt(transcript) },
-        ],
-        // zodResponseFormat ensures response matches summarySchema
-        response_format: zodResponseFormat(summarySchema, "summary"),
-      }
-    )) as OpenAI.Chat.Completions.ChatCompletion;
+    // Call OpenAI directly (simpler and more reliable)
+    const response = await openai.chat.completions.create({
+      model: "gpt-5-mini",
+      messages: [
+        { role: "system", content: SUMMARY_SYSTEM_PROMPT },
+        { role: "user", content: buildSummaryPrompt(transcript) },
+      ],
+      response_format: zodResponseFormat(summarySchema, "summary"),
+    });
 
     const content = response.choices[0]?.message?.content;
     // Parse and validate response against schema
@@ -138,10 +128,10 @@ export async function generateSummary(
 
     // Graceful degradation: return error message but allow workflow to continue
     return {
-      full: "⚠️ Error generating summary with GPT-4. Please check logs or try again.",
-      bullets: ["Summary generation failed - see full transcript"],
-      insights: ["Error occurred during AI generation"],
-      tldr: "Summary generation failed",
+      full: "⚠️ Erro ao gerar resumo. Verifique os logs ou tente novamente.",
+      bullets: ["Falha na geração - veja a transcrição completa"],
+      insights: ["Erro durante a geração com IA"],
+      tldr: "Falha na geração do resumo",
     };
   }
 }

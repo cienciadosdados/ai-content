@@ -71,10 +71,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
               {/* Title + Status + Delete */}
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0 overflow-hidden">
-                  <h3 className="font-extrabold text-lg md:text-xl lg:text-2xl wrap-break-word hyphens-auto group-hover:text-emerald-600 transition-colors leading-snug">
+                  <h3 className="font-extrabold text-lg md:text-xl lg:text-2xl wrap-break-word hyphens-auto group-hover:text-emerald-400 transition-colors leading-snug text-white">
                     {project.displayName || project.fileName}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-2 font-medium">
+                  <p className="text-sm text-slate-400 mt-2 font-medium">
                     {formatSmartDate(project.createdAt)}
                   </p>
                 </div>
@@ -120,14 +120,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
               {/* Metadata with badges */}
               <div className="flex items-center gap-3 flex-wrap">
-                <Badge className="text-xs font-semibold bg-emerald-100 text-emerald-700 border-emerald-200">
+                <Badge className="text-xs font-semibold bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
                   {formatFileSize(project.fileSize)}
                 </Badge>
-                <Badge className="text-xs font-semibold bg-emerald-100 text-emerald-700 border-emerald-200 uppercase">
+                <Badge className="text-xs font-semibold bg-emerald-500/20 text-emerald-400 border-emerald-500/30 uppercase">
                   {project.fileFormat}
                 </Badge>
                 {project.fileDuration && (
-                  <Badge className="text-xs font-semibold bg-emerald-100 text-emerald-700 border-emerald-200">
+                  <Badge className="text-xs font-semibold bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
                     {formatDuration(project.fileDuration)}
                   </Badge>
                 )}

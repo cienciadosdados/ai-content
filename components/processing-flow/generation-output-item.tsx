@@ -59,10 +59,10 @@ export function GenerationOutputItem({
                 className={cn(
                   "font-bold text-base transition-all duration-500",
                   isLocked
-                    ? "text-gray-400"
+                    ? "text-slate-500"
                     : isActive
-                      ? "text-emerald-700"
-                      : "text-gray-600"
+                      ? "text-emerald-400"
+                      : "text-slate-400"
                 )}
               >
                 {name}
@@ -82,10 +82,10 @@ export function GenerationOutputItem({
               className={cn(
                 "text-sm transition-all duration-500",
                 isLocked
-                  ? "text-gray-400 opacity-50"
+                  ? "text-slate-500 opacity-50"
                   : isActive
-                    ? "text-gray-700 opacity-100"
-                    : "text-gray-500 opacity-60"
+                    ? "text-slate-300 opacity-100"
+                    : "text-slate-500 opacity-60"
               )}
             >
               {description}

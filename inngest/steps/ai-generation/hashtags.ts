@@ -106,24 +106,15 @@ export async function generateHashtags(
   console.log("Generating hashtags with GPT");
 
   try {
-    // Bind OpenAI method to preserve `this` context for step.ai.wrap
-    const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
-    );
-
-    // Call OpenAI with Structured Outputs for validated response
-    const response = (await step.ai.wrap(
-      "generate-hashtags-with-gpt",
-      createCompletion,
-      {
-        model: "gpt-5-mini",
-        messages: [
-          { role: "system", content: HASHTAGS_SYSTEM_PROMPT },
-          { role: "user", content: buildHashtagsPrompt(transcript) },
-        ],
-        response_format: zodResponseFormat(hashtagsSchema, "hashtags"),
-      }
-    )) as OpenAI.Chat.Completions.ChatCompletion;
+    // Call OpenAI directly
+    const response = await openai.chat.completions.create({
+      model: "gpt-5-mini",
+      messages: [
+        { role: "system", content: HASHTAGS_SYSTEM_PROMPT },
+        { role: "user", content: buildHashtagsPrompt(transcript) },
+      ],
+      response_format: zodResponseFormat(hashtagsSchema, "hashtags"),
+    });
 
     const content = response.choices[0]?.message?.content;
     // Parse and validate against schema

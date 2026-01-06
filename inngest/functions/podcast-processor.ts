@@ -59,10 +59,12 @@ export const podcastProcessor = inngest.createFunction(
   // Event trigger: sent by server action after upload
   { event: "podcast/uploaded" },
   async ({ event, step }) => {
-    const { projectId, fileUrl, plan: userPlan } = event.data;
+    const { projectId, fileUrl, plan: userPlan, youtubeTranscript, mimeType } = event.data;
     const plan = (userPlan as PlanName) || "free"; // Default to free if not provided
+    const isYouTube = mimeType === "text/youtube-transcript" || !!youtubeTranscript;
 
     console.log(`Processing project ${projectId} for ${plan} plan`);
+    console.log(`mimeType: ${mimeType}, isYouTube: ${isYouTube}, hasTranscript: ${!!youtubeTranscript}, transcriptLength: ${youtubeTranscript?.length || 0}`);
 
     try {
       // Mark project as processing in Convex (UI will show "Processing..." state)
@@ -81,12 +83,21 @@ export const podcastProcessor = inngest.createFunction(
         });
       });
 
-      // Step 1: Transcribe audio with AssemblyAI (sequential - blocks next steps)
-      // This step is durable: if it fails, Inngest retries automatically
-      // Speaker diarization is always enabled; UI access is gated by plan
-      const transcript = await step.run("transcribe-audio", () =>
-        transcribeWithAssemblyAI(fileUrl, projectId, plan)
-      );
+      // Step 1: Get transcript - either from YouTube or AssemblyAI
+      const transcript = await step.run("get-transcript-v3", async () => {
+        if (isYouTube && youtubeTranscript) {
+          console.log(`Using YouTube transcript (${youtubeTranscript.length} chars)`);
+          return { 
+            text: youtubeTranscript, 
+            utterances: [] as any[], 
+            chapters: [] as any[], 
+            segments: [] as any[] 
+          };
+        } else {
+          // Audio file: transcribe with AssemblyAI
+          return await transcribeWithAssemblyAI(fileUrl, projectId, plan);
+        }
+      });
 
       // Update jobStatus: transcription complete
       await step.run("update-job-status-transcription-completed", async () => {

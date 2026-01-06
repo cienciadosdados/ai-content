@@ -1,4 +1,4 @@
-# AI Podcast SaaS - Semana 4 do SaaS AI
+# AI Content Engine - Semana 4 do SaaS AI
 
 [![Ciência dos Dados](https://img.shields.io/badge/Ci%C3%AAncia%20dos%20Dados-Projeto%20Semana%204-blue)](https://cienciadosdados.com)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
@@ -6,13 +6,14 @@
 ![Clerk](https://img.shields.io/badge/Clerk-Auth-blue)
 ![Inngest](https://img.shields.io/badge/Inngest-Workflows-purple)
 ![AssemblyAI](https://img.shields.io/badge/AssemblyAI-Transcription-green)
+![YouTube](https://img.shields.io/badge/YouTube-Transcript-red)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT-teal)
 
 > **🎯 Projeto da Semana 4** do programa **SaaS AI** da [Ciência dos Dados](https://cienciadosdados.com)
 
 ## Pare de Gastar Horas Extraindo Informações de Podcasts - Deixe a IA Fazer!
 
-Faça upload do seu podcast uma vez. Receba conteúdo otimizado para 6 redes sociais automaticamente.
+Faça upload do seu podcast **ou cole um link do YouTube**. Receba conteúdo otimizado para 6 redes sociais automaticamente.
 
 ---
 
@@ -49,7 +50,7 @@ Pense nele como **sua redação de IA para conteúdo de podcast**.
 
 Explicação simples:
 
-1. **Você faz upload** de um arquivo de áudio (seu episódio de podcast)
+1. **Você faz upload** de um arquivo de áudio (seu episódio de podcast) **ou cola um link do YouTube**
 2. **A IA analisa** seu conteúdo, entendendo speakers, tópicos e momentos-chave
 3. **Você recebe** um pacote completo de distribuição:
    - Resumo com insights principais
@@ -60,7 +61,7 @@ Explicação simples:
    - Momentos-chave para clips virais
    - Transcrição completa com identificação de speakers
 
-**O workflow:** Gravar → Upload → IA Analisa → Receber Conteúdo
+**O workflow:** Gravar → Upload (ou YouTube) → IA Analisa → Receber Conteúdo
 
 Sem escrita manual. Sem copiar e colar entre plataformas. Sem adivinhar quais hashtags funcionam.
 
@@ -93,6 +94,7 @@ Este projeto faz parte do programa **SaaS AI** da [Ciência dos Dados](https://c
 
 ### Para Criadores de Podcast
 
+- **🎬 Suporte a YouTube** - Cole um link do YouTube e extraia transcrição automaticamente (sem precisar de áudio!)
 - **📝 Resumo com IA** - Visão geral completa com bullets, insights principais e TL;DR
 - **📱 Posts para Redes Sociais** - Conteúdo otimizado para 6 plataformas:
   - **Twitter** - 280 caracteres, direto e engajador
@@ -146,21 +148,27 @@ Este projeto faz parte do programa **SaaS AI** da [Ciência dos Dados](https://c
 
 ```mermaid
 flowchart TD
-    A[Usuário faz Upload do Áudio] --> B[Arquivo salvo no Vercel Blob]
-    B --> C[Evento Inngest Disparado]
-    C --> D[Status: Processando]
-    D --> E[Transcrição AssemblyAI]
-    E --> F[Geração de Conteúdo IA Paralela]
-    F --> G[Resultados Salvos no Convex]
-    G --> H[Status: Completo]
-    H --> I[Usuário Visualiza Dashboard]
-    I --> J[Atualizações Real-time via Convex]
+    A[Usuário faz Upload do Áudio ou Cola Link YouTube] --> B{Tipo de Input}
+    B -->|Áudio| C[Arquivo salvo no Vercel Blob]
+    B -->|YouTube| D[Python Service extrai transcrição]
+    C --> E[Evento Inngest Disparado]
+    D --> E
+    E --> F[Status: Processando]
+    F -->|Áudio| G[Transcrição AssemblyAI]
+    F -->|YouTube| H[Usa transcrição já extraída]
+    G --> I[Geração de Conteúdo IA Paralela]
+    H --> I
+    I --> J[Resultados Salvos no Convex]
+    J --> K[Status: Completo]
+    K --> L[Usuário Visualiza Dashboard]
+    L --> M[Atualizações Real-time via Convex]
 ```
 
 **Notas de Performance:**
-- Transcrição: ~30-60 segundos
+- Transcrição (Áudio): ~30-60 segundos via AssemblyAI
+- Transcrição (YouTube): ~2-5 segundos (extração direta)
 - Geração de Conteúdo IA (paralela): ~60 segundos
-- **Tempo Total de Processamento: ~90-120 segundos**
+- **Tempo Total de Processamento: ~90-120 segundos (áudio) ou ~60-70 segundos (YouTube)**
 
 ---
 
@@ -244,27 +252,36 @@ cp .env.example .env.local
 
 Preencha todas as chaves necessárias no `.env.local` (veja seção Variáveis de Ambiente abaixo).
 
-4. **Inicie o banco de dados Convex**
+4. **Inicie os serviços de desenvolvimento** (3 terminais)
 
+**Terminal 1 - Serviço Python (YouTube):**
 ```bash
-pnpm convex dev
+cd python-service
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/Mac
+pip install flask youtube-transcript-api requests flask-cors
+python app.py
 ```
 
-Isso irá:
-- Criar um novo projeto Convex (ou conectar ao existente)
-- Configurar o schema do banco
-- Gerar tipos TypeScript
-- Começar a observar mudanças
-
-5. **Inicie o servidor de desenvolvimento** (em um novo terminal)
-
+**Terminal 2 - Next.js + Convex:**
 ```bash
 pnpm dev
 ```
 
-6. **Abra seu navegador**
+**Terminal 3 - Inngest Dev Server:**
+```bash
+npx inngest-cli@latest dev
+```
+
+5. **Abra seu navegador**
 
 Navegue para `http://localhost:3000`
+
+**URLs dos serviços:**
+- App: http://localhost:3000
+- Python Service: http://localhost:5000
+- Inngest Dashboard: http://localhost:8288
 
 ---
 
@@ -294,6 +311,9 @@ OPENAI_API_KEY=sk-proj-...
 # Inngest
 INNGEST_EVENT_KEY=...
 INNGEST_SIGNING_KEY=signkey-prod-...
+
+# YouTube Service (opcional - para desenvolvimento local)
+YOUTUBE_SERVICE_URL=http://localhost:5000
 ```
 
 **Notas de Segurança:**
@@ -360,7 +380,24 @@ INNGEST_SIGNING_KEY=signkey-prod-...
 2. Crie uma API key
 3. Adicione créditos à sua conta (pay-as-you-go)
 4. Copie sua API key para `.env.local`
-5. **Modelo Usado**: GPT-4 (~$0.10 por episódio de podcast)
+5. **Modelo Usado**: GPT-5-mini (~$0.05 por episódio de podcast)
+
+#### 7. Python Service (YouTube - Desenvolvimento Local)
+
+O serviço Python é necessário apenas para desenvolvimento local da feature de YouTube.
+
+1. Instale Python 3.8+
+2. Navegue para `python-service/`
+3. Crie um ambiente virtual e instale dependências:
+```bash
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install flask youtube-transcript-api requests flask-cors
+```
+4. Execute: `python app.py`
+5. O serviço estará disponível em `http://localhost:5000`
+
+**Nota**: Para produção, o serviço Python precisa ser hospedado separadamente (Railway, Render, etc.)
 
 ---
 
@@ -369,11 +406,12 @@ INNGEST_SIGNING_KEY=signkey-prod-...
 Antes de fazer upload do primeiro podcast, verifique:
 
 - [ ] Todas variáveis de ambiente configuradas no `.env.local`
-- [ ] Banco Convex rodando (`pnpm convex dev`)
+- [ ] Serviço Python rodando (`python app.py` na pasta `python-service/`)
+- [ ] Next.js + Convex rodando (`pnpm dev`)
+- [ ] Inngest Dev Server rodando (`npx inngest-cli@latest dev`)
 - [ ] Aplicação Clerk configurada com planos de billing
-- [ ] Inngest conectado (verifique logs ao iniciar dev server)
 - [ ] Você consegue acessar o app em `http://localhost:3000`
-- [ ] Teste upload com arquivo pequeno (menos de 10MB)
+- [ ] Teste upload com arquivo pequeno (menos de 10MB) ou link do YouTube
 
 ---
 

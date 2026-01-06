@@ -1,96 +1,19 @@
-import { Sparkles } from "lucide-react";
+import { Video } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t bg-gradient-to-br from-gray-50 to-emerald-50/30">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 rounded-lg gradient-emerald">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-bold text-lg gradient-emerald-text">
-                  Podassi
-                </span>
-              </div>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                AI-powered podcast processing that transforms your content into
-                engagement gold.
-              </p>
+    <footer className="border-t border-emerald-500/20 py-8 mt-20">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <Video className="h-4 w-4 text-emerald-400" />
             </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-bold mb-4 text-gray-900">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="/"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/dashboard/projects"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Projects
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/dashboard/upload"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Upload
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div>
-              <h3 className="font-bold mb-4 text-gray-900">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Documentation
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-gray-600 hover:text-emerald-600 transition-colors text-sm"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <span className="font-bold text-white">AI Content Engine</span>
           </div>
-
-          {/* Bottom bar */}
-          <div className="pt-8 border-t border-gray-200">
-            <p className="text-center text-sm text-gray-600">
-              {new Date().getFullYear()} Podassi. This is a demo project.
-            </p>
-          </div>
+          <p className="text-center text-sm text-slate-500">
+            © {new Date().getFullYear()} AI Content Engine. Projeto do AICODEPRO.
+          </p>
         </div>
       </div>
     </footer>

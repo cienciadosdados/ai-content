@@ -1,12 +1,15 @@
+"use client";
+
+import { motion } from "framer-motion";
 import {
   FileText,
   Hash,
   type LucideIcon,
   MessageSquare,
   Sparkles,
-  Upload,
   Zap,
   Users,
+  Youtube,
 } from "lucide-react";
 
 interface Feature {
@@ -17,74 +20,79 @@ interface Feature {
 
 const FEATURES: Feature[] = [
   {
-    icon: Sparkles,
-    title: "AI-Powered Analysis",
+    icon: Youtube,
+    title: "YouTube & Audio",
     description:
-      "Advanced audio analysis using AssemblyAI to understand your podcast content and power all AI features.",
+      "Cole um link do YouTube ou faça upload de áudio. Extraímos o conteúdo automaticamente.",
+  },
+  {
+    icon: Sparkles,
+    title: "Análise com IA",
+    description:
+      "AssemblyAI transcreve e analisa seu conteúdo para alimentar todas as features de IA.",
   },
   {
     icon: FileText,
-    title: "Smart Summaries",
+    title: "Resumos Inteligentes",
     description:
-      "Generate comprehensive summaries with key points and insights from your podcast content.",
+      "Gere resumos completos com pontos-chave e insights do seu conteúdo.",
   },
   {
     icon: MessageSquare,
-    title: "Social Posts",
+    title: "Posts para Redes",
     description:
-      "Generate platform-optimized social media posts for Twitter, LinkedIn, Instagram, TikTok, YouTube, and Facebook.",
+      "Posts otimizados para Twitter, LinkedIn, Instagram, TikTok, YouTube e Facebook.",
   },
   {
     icon: Hash,
-    title: "Titles & Hashtags",
+    title: "Títulos & Hashtags",
     description:
-      "Get SEO-optimized titles and platform-specific hashtags automatically for maximum reach.",
+      "Títulos SEO-friendly e hashtags específicas por plataforma automaticamente.",
   },
   {
     icon: Zap,
-    title: "Key Moments & Chapters",
+    title: "Momentos-Chave",
     description:
-      "Automatically identify viral moments and generate YouTube timestamps for better engagement.",
-  },
-  {
-    icon: Users,
-    title: "Speaker Dialogue",
-    description:
-      "Full transcript with speaker identification - see exactly who said what and when (ULTRA only).",
+      "Identifique momentos virais e gere timestamps para YouTube automaticamente.",
   },
 ];
 
 export function FeaturesSection() {
   return (
-    <section className="container mx-auto px-4 py-24 md:py-32">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Everything You Need in{" "}
-            <span className="gradient-emerald-text">One Platform</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Powerful AI tools to amplify your podcast's reach and engagement
-          </p>
-        </div>
+    <section className="py-24 md:py-32">
+      <div className="mx-auto max-w-7xl px-4">
+        <motion.h2 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center text-3xl font-bold text-white mb-4"
+        >
+          Tudo que você precisa em{" "}
+          <span className="text-emerald-400">uma plataforma</span>
+        </motion.h2>
+        <p className="text-center text-slate-400 mb-16 max-w-2xl mx-auto">
+          Ferramentas de IA poderosas para amplificar o alcance do seu conteúdo
+        </p>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div
+              <motion.div
                 key={feature.title}
-                className="glass-card rounded-2xl hover-lift p-8 group"
-                style={{ animationDelay: `${index * 100}ms` }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, borderColor: "rgba(16, 185, 129, 0.5)" }}
+                className="rounded-2xl border border-emerald-500/20 bg-black/40 backdrop-blur-sm p-6 cursor-pointer transition-colors"
               >
-                <div className="rounded-2xl gradient-emerald p-4 w-fit mb-6 group-hover:animate-pulse-emerald transition-all">
-                  <Icon className="h-8 w-8 text-white" />
+                <div className="mb-4 inline-flex p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                  <Icon className="h-6 w-6 text-emerald-400" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 group-hover:text-emerald-600 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-              </div>
+                <h3 className="text-lg font-semibold text-white">{feature.title}</h3>
+                <p className="mt-2 text-sm text-slate-400">{feature.description}</p>
+              </motion.div>
             );
           })}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, UserButton, useAuth, Protect } from "@clerk/nextjs";
-import { Home, Sparkles, Zap, Crown } from "lucide-react";
+import { Home, Zap, Crown, Video } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DashboardNav } from "@/components/dashboard-nav";
@@ -15,13 +15,7 @@ export function Header() {
   const showDashboardNav = isDashboard;
 
   return (
-    <header
-      className={
-        isDashboard
-          ? "gradient-emerald sticky top-0 transition-all shadow-xl backdrop-blur-sm z-50 border-b border-white/10"
-          : "glass-nav sticky top-0 transition-all z-50 backdrop-blur-md border-b border-gray-200/50 shadow-sm"
-      }
-    >
+    <header className="sticky top-0 z-50 border-b border-emerald-500/20 bg-black/80 backdrop-blur-md">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2 lg:gap-8">
@@ -29,29 +23,11 @@ export function Header() {
               href="/"
               className="flex items-center gap-2.5 hover:opacity-90 transition-all duration-300 group"
             >
-              <div
-                className={
-                  isDashboard
-                    ? "p-2 rounded-xl bg-white/95 group-hover:bg-white group-hover:scale-110 group-hover:shadow-xl transition-all duration-300"
-                    : "p-2 rounded-xl gradient-emerald group-hover:scale-110 group-hover:shadow-xl transition-all duration-300"
-                }
-              >
-                <Sparkles
-                  className={
-                    isDashboard
-                      ? "h-5 w-5 text-emerald-600 group-hover:rotate-12 transition-transform duration-300"
-                      : "h-5 w-5 text-white group-hover:rotate-12 transition-transform duration-300"
-                  }
-                />
+              <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 group-hover:scale-110 transition-all duration-300">
+                <Video className="h-5 w-5 text-emerald-400 group-hover:rotate-12 transition-transform duration-300" />
               </div>
-              <span
-                className={
-                  isDashboard
-                    ? "text-xl font-bold text-white tracking-tight"
-                    : "text-xl font-bold gradient-emerald-text tracking-tight"
-                }
-              >
-                Podassi
+              <span className="text-xl font-bold text-white tracking-tight">
+                AI Content Engine
               </span>
             </Link>
 
@@ -74,13 +50,7 @@ export function Header() {
                   fallback={null}
                 >
                   <Link href="/dashboard/upgrade">
-                    <Button
-                      className={
-                        isDashboard
-                          ? "bg-white/95 text-emerald-600 hover:bg-white hover:scale-105 gap-2 shadow-lg font-semibold transition-all duration-300 border border-white/20"
-                          : "gradient-emerald text-white hover-glow hover:scale-105 gap-2 shadow-lg transition-all duration-300"
-                      }
-                    >
+                    <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:shadow-emerald-500/25 hover:scale-105 gap-2 shadow-lg font-semibold transition-all duration-300">
                       <Zap className="h-4 w-4" />
                       <span className="hidden lg:inline">Upgrade to Pro</span>
                       <span className="lg:hidden">Pro</span>
@@ -96,13 +66,7 @@ export function Header() {
                   fallback={null}
                 >
                   <Link href="/dashboard/upgrade">
-                    <Button
-                      className={
-                        isDashboard
-                          ? "bg-white/95 text-emerald-600 hover:bg-white hover:scale-105 gap-2 shadow-lg font-semibold transition-all duration-300 border border-white/20"
-                          : "gradient-emerald text-white hover-glow hover:scale-105 gap-2 shadow-lg transition-all duration-300"
-                      }
-                    >
+                    <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:shadow-emerald-500/25 hover:scale-105 gap-2 shadow-lg font-semibold transition-all duration-300">
                       <Crown className="h-4 w-4" />
                       <span className="hidden lg:inline">Upgrade to Ultra</span>
                       <span className="lg:hidden">Ultra</span>
@@ -115,13 +79,7 @@ export function Header() {
                   condition={(has) => has({ plan: "ultra" })}
                   fallback={null}
                 >
-                  <Badge
-                    className={
-                      isDashboard
-                        ? "gap-1.5 hidden md:flex bg-white/95 text-emerald-600 border-0 px-3 py-1.5 shadow-md hover:shadow-lg transition-all duration-300"
-                        : "gap-1.5 hidden md:flex gradient-emerald text-white border-0 px-3 py-1.5 shadow-md hover:shadow-lg transition-all duration-300"
-                    }
-                  >
+                  <Badge className="gap-1.5 hidden md:flex bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5">
                     <Crown className="h-3.5 w-3.5" />
                     <span className="font-semibold">Ultra</span>
                   </Badge>
@@ -129,15 +87,7 @@ export function Header() {
 
                 {!showDashboardNav && (
                   <Link href="/dashboard/projects">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={
-                        isDashboard
-                          ? "hover-scale text-white hover:bg-white/20 transition-all duration-300"
-                          : "hover-scale transition-all duration-300"
-                      }
-                    >
+                    <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-300">
                       <span className="hidden lg:inline">My Projects</span>
                       <span className="lg:hidden">Projects</span>
                     </Button>
@@ -145,15 +95,7 @@ export function Header() {
                 )}
                 {showDashboardNav && (
                   <Link href="/" className="hidden lg:block">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={
-                        isDashboard
-                          ? "gap-2 hover-scale text-white hover:bg-white/20 transition-all duration-300"
-                          : "gap-2 hover-scale transition-all duration-300"
-                      }
-                    >
+                    <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:text-white hover:bg-white/10 transition-all duration-300">
                       <Home className="h-4 w-4" />
                       Home
                     </Button>
@@ -165,14 +107,8 @@ export function Header() {
               </>
             ) : (
               <SignInButton mode="modal">
-                <Button
-                  className={
-                    isDashboard
-                      ? "bg-white/95 text-emerald-600 hover:bg-white hover:scale-105 shadow-lg font-semibold transition-all duration-300"
-                      : "gradient-emerald text-white hover-glow hover:scale-105 shadow-lg transition-all duration-300"
-                  }
-                >
-                  Sign In
+                <Button className="bg-emerald-600 text-white hover:bg-emerald-500 transition-colors">
+                  Entrar
                 </Button>
               </SignInButton>
             )}

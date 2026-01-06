@@ -1,82 +1,77 @@
 import { SignInButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
-import { Sparkles } from "lucide-react";
+import { ChevronRight, Sparkles, Video, Youtube } from "lucide-react";
 import Link from "next/link";
 import { PodcastUploader } from "@/components/podcast-uploader";
 import { Button } from "@/components/ui/button";
+import { FloatingGrid } from "@/components/ui/floating-grid";
+import { MouseGradient } from "@/components/ui/mouse-gradient";
+import { SonarBadge } from "@/components/ui/sonar-badge";
 
 export async function HeroSection() {
   const { userId } = await auth();
   const isSignedIn = !!userId;
 
   return (
-    <section className="relative overflow-hidden mesh-background">
-      <div className="container mx-auto px-4 py-24 md:pb-32 md:pt-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-20 animate-float">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-card hover-glow mb-8 animate-shimmer">
-              <Sparkles className="h-5 w-5 text-emerald-600" />
-              <span className="text-sm font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
-                AI-Powered Podcast Processing
-              </span>
-            </div>
-
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold mb-8 leading-tight">
-              <span className="gradient-emerald-text">Transform</span> Your
-              <br />
-              Podcasts with AI
-            </h1>
-
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Upload your podcast audio and get AI-generated summaries,
-              transcripts, social posts, key moments, and more - all in minutes.
-            </p>
-          </div>
+    <section className="relative min-h-[90vh] overflow-hidden bg-black">
+      <MouseGradient />
+      <FloatingGrid />
+      
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20">
+        <div className="text-center">
+          <SonarBadge text="Powered by AI PRO EXPERT" className="mb-6" />
+          
+          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
+            <span className="text-white">Transforme vídeos em</span>
+            <br />
+            <span className="text-emerald-400">conteúdo multi-plataforma</span>
+          </h1>
+          
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+            Cole um link do <span className="text-emerald-400">YouTube</span> ou faça upload de áudio.
+            Receba resumos, posts para redes sociais, títulos e hashtags{" "}
+            <span className="text-emerald-400">em segundos.</span>
+          </p>
+        </div>
 
           {isSignedIn ? (
-            <div className="space-y-6">
-              <div className="glass-card-strong rounded-2xl p-8 hover-lift">
-                <PodcastUploader />
-              </div>
-              <div className="text-center">
-                <Link href="/dashboard/projects">
-                  <Button variant="outline" size="lg" className="hover-glow">
-                    View All Projects
-                  </Button>
-                </Link>
-              </div>
+          <div className="mt-10 space-y-6">
+            <div className="max-w-2xl mx-auto rounded-2xl border border-emerald-500/20 bg-black/60 backdrop-blur-sm p-8">
+              <PodcastUploader />
             </div>
-          ) : (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <SignInButton mode="modal">
-                <Button
-                  size="lg"
-                  className="gradient-emerald text-white hover-glow text-lg px-8 py-6 rounded-xl shadow-lg"
-                >
-                  Get Started
-                  <Sparkles className="ml-2 h-6 w-6" />
-                </Button>
-              </SignInButton>
+            <div className="text-center">
               <Link href="/dashboard/projects">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="hover-glow text-lg px-8 py-6 rounded-xl"
-                >
-                  View Projects
+                <Button variant="outline" className="text-slate-300 border-emerald-500/30 hover:bg-emerald-500/10 hover:text-white">
+                  Ver Meus Projetos
                 </Button>
               </Link>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <>
+            <div className="mt-10 flex items-center justify-center gap-4">
+              <SignInButton mode="modal">
+                <Button className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all">
+                  <Sparkles className="h-5 w-5" />
+                  Começar Agora
+                  <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </SignInButton>
+            </div>
+            
+            <div className="mt-6 flex items-center justify-center gap-6 text-sm text-slate-500">
+              <span className="flex items-center gap-1">
+                <Youtube className="h-4 w-4 text-emerald-500" />
+                Suporte a YouTube
+              </span>
+              <span className="flex items-center gap-1">
+                <Video className="h-4 w-4 text-emerald-500" />
+                Upload de áudio
+              </span>
+            </div>
+          </>
+        )}
       </div>
-
-      {/* Decorative gradient orbs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
-      <div
-        className="absolute bottom-0 left-0 w-96 h-96 bg-teal-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
-        style={{ animationDelay: "1s" }}
-      ></div>
     </section>
   );
 }

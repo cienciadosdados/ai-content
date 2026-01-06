@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Podcast Assistant",
+  title: "AI Content Engine - Transforme Vídeos em Conteúdo",
   description:
-    "Transform your podcasts with AI - Get transcripts, summaries, social posts, and more",
+    "Cole um link do YouTube ou faça upload de áudio. Receba resumos, posts para redes sociais, títulos e hashtags em segundos.",
 };
 
 export default function RootLayout({

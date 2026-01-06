@@ -128,24 +128,15 @@ export async function generateSocialPosts(
   console.log("Generating social posts with GPT-4");
 
   try {
-    // Bind OpenAI method to preserve `this` context for step.ai.wrap
-    const createCompletion = openai.chat.completions.create.bind(
-      openai.chat.completions
-    );
-
-    // Call OpenAI with Structured Outputs for type-safe, validated response
-    const response = (await step.ai.wrap(
-      "generate-social-posts-with-gpt",
-      createCompletion,
-      {
-        model: "gpt-5-mini",
-        messages: [
-          { role: "system", content: SOCIAL_SYSTEM_PROMPT },
-          { role: "user", content: buildSocialPrompt(transcript) },
-        ],
-        response_format: zodResponseFormat(socialPostsSchema, "social_posts"),
-      }
-    )) as OpenAI.Chat.Completions.ChatCompletion;
+    // Call OpenAI directly
+    const response = await openai.chat.completions.create({
+      model: "gpt-5-mini",
+      messages: [
+        { role: "system", content: SOCIAL_SYSTEM_PROMPT },
+        { role: "user", content: buildSocialPrompt(transcript) },
+      ],
+      response_format: zodResponseFormat(socialPostsSchema, "social_posts"),
+    });
 
     const content = response.choices[0]?.message?.content;
     const socialPosts = content

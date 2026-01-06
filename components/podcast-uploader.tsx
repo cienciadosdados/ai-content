@@ -1,28 +1,8 @@
 /**
- * Podcast Uploader Component
+ * Content Uploader Component
  *
- * Main orchestration component for podcast file uploads.
- * Manages the complete upload flow from file selection to project creation.
- *
- * Upload Flow:
- * 1. User selects file (via UploadDropzone)
- * 2. Extract audio duration (for time estimates)
- * 3. Pre-validate against plan limits (via server action)
- * 4. Upload file to Vercel Blob (direct upload with progress tracking)
- * 5. Create project in Convex (via server action)
- * 6. Trigger Inngest workflow (via server action)
- * 7. Redirect to project detail page
- *
- * State Management:
- * - selectedFile: Current file awaiting upload
- * - fileDuration: Extracted or estimated duration
- * - uploadProgress: 0-100% upload progress
- * - uploadStatus: idle | uploading | processing | completed | error
- *
- * Architecture:
- * - Pre-validation via server action prevents cryptic Vercel Blob errors
- * - Direct upload to Blob bypasses Next.js server (handles large files)
- * - Server actions provide type-safe, clean API for validation and project creation
+ * Main orchestration component for content uploads.
+ * Supports both file upload and YouTube URL extraction.
  */
 "use client";
 
@@ -31,19 +11,27 @@ import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Upload, Youtube } from "lucide-react";
 import {
   createProjectAction,
+  createYouTubeProjectAction,
   validateUploadAction,
 } from "@/app/actions/projects";
 import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/components/upload-dropzone";
 import { UploadProgress } from "@/components/upload-progress";
+import { YouTubeInput } from "@/components/youtube-input";
 import { estimateDurationFromSize, getAudioDuration } from "@/lib/audio-utils";
 import type { UploadStatus } from "@/lib/types";
 
+type InputMode = "upload" | "youtube";
+
 export function PodcastUploader() {
   const router = useRouter();
-  const { userId } = useAuth(); // Clerk authentication
+  const { userId } = useAuth();
+
+  // Input mode state
+  const [inputMode, setInputMode] = useState<InputMode>("youtube");
 
   // Upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -161,10 +149,86 @@ export function PodcastUploader() {
     setError(null);
   };
 
+  /**
+   * Handle YouTube transcript extraction result
+   */
+  const handleYouTubeExtracted = async (data: {
+    transcript: string;
+    title: string;
+    videoId: string;
+    duration: number;
+  }) => {
+    if (!userId) {
+      toast.error("Você precisa estar logado");
+      return;
+    }
+
+    try {
+      setUploadStatus("processing");
+
+      // Criar projeto com transcrição do YouTube (usa action específica)
+      const { projectId } = await createYouTubeProjectAction({
+        videoId: data.videoId,
+        title: data.title,
+        transcript: data.transcript,
+        duration: data.duration,
+      });
+
+      toast.success("Transcrição extraída! Processando conteúdo...");
+      setUploadStatus("completed");
+
+      router.push(`/dashboard/projects/${projectId}`);
+    } catch (err) {
+      console.error("Error creating project from YouTube:", err);
+      setUploadStatus("error");
+      const errorMessage = err instanceof Error ? err.message : "Erro ao criar projeto";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Show dropzone only when no file is selected */}
+      {/* Mode Selector Tabs */}
       {!selectedFile && uploadStatus === "idle" && (
+        <div className="flex gap-2 p-1 bg-black/40 rounded-lg border border-emerald-500/20">
+          <button
+            type="button"
+            onClick={() => setInputMode("youtube")}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
+              inputMode === "youtube"
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                : "text-slate-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Youtube className="h-4 w-4" />
+            Link do YouTube
+          </button>
+          <button
+            type="button"
+            onClick={() => setInputMode("upload")}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
+              inputMode === "upload"
+                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                : "text-slate-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Upload className="h-4 w-4" />
+            Upload de Arquivo
+          </button>
+        </div>
+      )}
+
+      {/* YouTube Input */}
+      {inputMode === "youtube" && !selectedFile && uploadStatus === "idle" && (
+        <YouTubeInput
+          onExtracted={handleYouTubeExtracted}
+          disabled={uploadStatus !== "idle"}
+        />
+      )}
+
+      {/* File Upload Dropzone */}
+      {inputMode === "upload" && !selectedFile && uploadStatus === "idle" && (
         <UploadDropzone
           onFileSelect={handleFileSelect}
           disabled={uploadStatus !== "idle"}
@@ -186,11 +250,11 @@ export function PodcastUploader() {
           {/* Action buttons (show when idle or error) */}
           {(uploadStatus === "idle" || uploadStatus === "error") && (
             <div className="flex gap-3">
-              <Button onClick={handleUpload} className="flex-1">
-                {uploadStatus === "error" ? "Try Again" : "Start Upload"}
+              <Button onClick={handleUpload} className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500">
+                {uploadStatus === "error" ? "Tentar Novamente" : "Iniciar Upload"}
               </Button>
-              <Button onClick={handleReset} variant="outline">
-                Cancel
+              <Button onClick={handleReset} variant="outline" className="border-emerald-500/30 text-slate-300 hover:bg-emerald-500/10">
+                Cancelar
               </Button>
             </div>
           )}

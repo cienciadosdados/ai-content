@@ -57,8 +57,8 @@ export function PhaseCard({
               />
             </div>
             <div>
-              <h3 className="text-2xl font-extrabold text-gray-900">{title}</h3>
-              <p className="text-base text-gray-600 mt-1">{description}</p>
+              <h3 className="text-2xl font-extrabold text-white">{title}</h3>
+              <p className="text-base text-slate-400 mt-1">{description}</p>
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export function PhaseCard({
         )}
 
         {!isRunning && timeEstimate && (
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-400">
             <Clock className="h-5 w-5" />
             <span>Estimated: {timeEstimate}</span>
           </div>

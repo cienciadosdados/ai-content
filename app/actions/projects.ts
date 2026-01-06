@@ -237,6 +237,74 @@ export async function deleteProjectAction(projectId: Id<"projects">) {
  * @returns Success response
  * @throws Error if authentication fails or user doesn't own project
  */
+/**
+ * Create project from YouTube transcript
+ * 
+ * Similar to createProjectAction but sends transcript directly
+ * instead of audio file URL. Skips AssemblyAI transcription step.
+ */
+export async function createYouTubeProjectAction(input: {
+  videoId: string;
+  title: string;
+  transcript: string;
+  duration: number;
+}) {
+  try {
+    const authObj = await auth();
+    const { userId } = authObj;
+
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const { videoId, title, transcript, duration } = input;
+
+    if (!videoId || !transcript) {
+      throw new Error("Missing required fields");
+    }
+
+    const { has } = authObj;
+    let plan: "free" | "pro" | "ultra" = "free";
+    if (has?.({ plan: "ultra" })) {
+      plan = "ultra";
+    } else if (has?.({ plan: "pro" })) {
+      plan = "pro";
+    }
+
+    // Create project in Convex
+    const projectId = await convex.mutation(api.projects.createProject, {
+      userId,
+      inputUrl: `https://www.youtube.com/watch?v=${videoId}`,
+      fileName: `${title}.youtube`,
+      fileSize: transcript.length,
+      fileDuration: duration,
+      fileFormat: "youtube",
+      mimeType: "text/youtube-transcript",
+    });
+
+    // Trigger Inngest workflow with transcript included
+    await inngest.send({
+      name: "podcast/uploaded",
+      data: {
+        projectId,
+        userId,
+        plan,
+        fileUrl: `https://www.youtube.com/watch?v=${videoId}`,
+        fileName: `${title}.youtube`,
+        fileSize: transcript.length,
+        mimeType: "text/youtube-transcript",
+        // Include transcript so Inngest can skip AssemblyAI
+        youtubeTranscript: transcript,
+      },
+    });
+
+    return { success: true, projectId };
+  } catch (error) {
+    console.error("Error creating YouTube project:", error);
+    throw error;
+  }
+}
+
 export async function updateDisplayNameAction(
   projectId: Id<"projects">,
   displayName: string

@@ -8,18 +8,15 @@ interface PricingSectionProps {
 export function PricingSection({ compact = false }: PricingSectionProps) {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 mesh-background-subtle"></div>
-      
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Simple, <span className="gradient-emerald-text">Transparent</span> Pricing
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Preços <span className="text-emerald-400">Simples</span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Choose the plan that fits your needs. Upgrade, downgrade, or cancel anytime.
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+              Escolha o plano ideal para você. Upgrade ou cancele quando quiser.
             </p>
           </div>
 
@@ -33,67 +30,78 @@ export function PricingSection({ compact = false }: PricingSectionProps) {
                       background: "linear-gradient(135deg, rgb(16 185 129), rgb(45 212 191))",
                       color: "white",
                       borderRadius: "1rem 1rem 0 0",
-                      padding: compact ? "2rem" : "2.5rem",
+                      padding: "1.5rem",
                     },
                     pricingTableCardTitle: {
-                      fontSize: compact ? "1.75rem" : "2.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "800",
                       color: "white",
-                      marginBottom: "0.5rem",
+                      marginBottom: "0.25rem",
                     },
                     pricingTableCardDescription: {
-                      fontSize: compact ? "0.95rem" : "1.1rem",
-                      color: "rgba(255, 255, 255, 0.95)",
+                      fontSize: "0.875rem",
+                      color: "rgba(255, 255, 255, 0.9)",
                       fontWeight: "500",
                     },
                     pricingTableCardFee: {
                       color: "white",
                       fontWeight: "800",
-                      fontSize: compact ? "2.5rem" : "3rem",
+                      fontSize: "2rem",
                     },
                     pricingTableCardFeePeriod: {
                       color: "rgba(255, 255, 255, 0.85)",
-                      fontSize: "1.1rem",
+                      fontSize: "0.875rem",
                     },
                     pricingTableCard: {
                       borderRadius: "1rem",
-                      border: "2px solid rgb(16 185 129 / 0.2)",
-                      boxShadow: "0 10px 40px rgba(16, 185, 129, 0.15)",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                      boxShadow: "0 10px 40px rgba(16, 185, 129, 0.1)",
                       transition: "all 0.3s ease",
                       overflow: "hidden",
-                      background: "rgba(255, 255, 255, 0.9)",
-                      backdropFilter: "blur(10px)",
+                      background: "rgb(15, 15, 15)",
                     },
                     pricingTableCardBody: {
-                      padding: compact ? "2rem" : "2.5rem",
+                      padding: "1.5rem",
+                      background: "rgb(15, 15, 15)",
+                      color: "rgb(148, 163, 184)",
                     },
                     pricingTableCardFeatures: {
-                      marginTop: "2rem",
-                      gap: "1rem",
+                      marginTop: "0.5rem",
+                      gap: "0.5rem",
                     },
                     pricingTableCardFeature: {
-                      fontSize: compact ? "0.95rem" : "1.05rem",
-                      padding: "0.75rem 0",
+                      fontSize: "0.875rem",
+                      padding: "0.5rem 0",
                       fontWeight: "500",
+                      color: "rgb(148, 163, 184)",
+                      borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
+                      background: "transparent",
+                    },
+                    pricingTableCardFeatureIcon: {
+                      color: "rgb(52, 211, 153)",
+                    },
+                    pricingTableCardFeatureText: {
+                      color: "rgb(148, 163, 184)",
                     },
                     pricingTableCardButton: {
-                      marginTop: "2rem",
-                      borderRadius: "0.75rem",
+                      marginTop: "1rem",
+                      borderRadius: "0.5rem",
                       fontWeight: "700",
-                      padding: "1rem 2.5rem",
+                      padding: "0.75rem 1.5rem",
                       transition: "all 0.2s ease",
-                      fontSize: "1.1rem",
+                      fontSize: "0.875rem",
                       background: "linear-gradient(135deg, rgb(16 185 129), rgb(45 212 191))",
                       border: "none",
                       boxShadow: "0 4px 15px rgba(16, 185, 129, 0.3)",
+                      color: "white",
                     },
                   },
                 }}
                 fallback={
                   <div className="flex items-center justify-center py-20">
-                    <div className="text-center space-y-4 glass-card p-12 rounded-2xl">
-                      <Loader2 className="h-16 w-16 animate-spin text-emerald-600 mx-auto" />
-                      <p className="text-gray-600 text-lg font-medium">Loading pricing options...</p>
+                    <div className="text-center space-y-4 bg-black/60 border border-emerald-500/20 p-12 rounded-2xl">
+                      <Loader2 className="h-16 w-16 animate-spin text-emerald-400 mx-auto" />
+                      <p className="text-slate-400 text-lg font-medium">Carregando opções...</p>
                     </div>
                   </div>
                 }
