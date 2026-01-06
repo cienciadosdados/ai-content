@@ -144,6 +144,112 @@ Este projeto faz parte do programa **AI CODE PRO** da [Ciência dos Dados](https
 
 ## 🔧 Como Funciona
 
+### Stack de Tecnologias
+
+```mermaid
+flowchart TB
+    subgraph Frontend["🖥️ Frontend"]
+        NEXTJS[Next.js 16<br/>App Router + Server Actions]
+        REACT[React 19<br/>Components + Hooks]
+        TAILWIND[Tailwind CSS<br/>Styling + Dark Theme]
+    end
+
+    subgraph Auth["🔐 Autenticação"]
+        CLERK[Clerk<br/>Auth + Billing + Plans]
+    end
+
+    subgraph Database["💾 Banco de Dados"]
+        CONVEX[Convex<br/>Real-time Database]
+        BLOB[Vercel Blob<br/>File Storage]
+    end
+
+    subgraph Orchestration["⚙️ Orquestração"]
+        INNGEST[Inngest<br/>Durable Workflows]
+    end
+
+    subgraph AI["🤖 Inteligência Artificial"]
+        OPENAI[OpenAI GPT-5<br/>Content Generation]
+        ASSEMBLYAI[AssemblyAI<br/>Audio Transcription]
+    end
+
+    subgraph YouTube["🎬 YouTube"]
+        PYTHON[Python Service<br/>Flask + youtube-transcript-api]
+    end
+
+    subgraph Deploy["🚀 Deploy"]
+        VERCEL[Vercel<br/>Hosting + Edge]
+    end
+
+    %% Conexões
+    NEXTJS --> CLERK
+    NEXTJS --> CONVEX
+    NEXTJS --> BLOB
+    NEXTJS --> INNGEST
+    NEXTJS --> PYTHON
+
+    CLERK --> |"JWT Token"| NEXTJS
+    CONVEX --> |"Real-time Updates"| REACT
+
+    INNGEST --> ASSEMBLYAI
+    INNGEST --> OPENAI
+    INNGEST --> CONVEX
+
+    PYTHON --> |"Transcript"| INNGEST
+
+    NEXTJS --> VERCEL
+
+    style Frontend fill:#1e293b,stroke:#10b981,color:#fff
+    style Auth fill:#1e293b,stroke:#3b82f6,color:#fff
+    style Database fill:#1e293b,stroke:#f97316,color:#fff
+    style Orchestration fill:#1e293b,stroke:#a855f7,color:#fff
+    style AI fill:#1e293b,stroke:#14b8a6,color:#fff
+    style YouTube fill:#1e293b,stroke:#ef4444,color:#fff
+    style Deploy fill:#1e293b,stroke:#6366f1,color:#fff
+```
+
+### Fluxo de Dados Entre Serviços
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Usuário
+    participant N as Next.js
+    participant C as Clerk
+    participant B as Vercel Blob
+    participant P as Python Service
+    participant I as Inngest
+    participant A as AssemblyAI
+    participant O as OpenAI
+    participant D as Convex
+
+    U->>N: Upload áudio ou YouTube URL
+    N->>C: Verifica autenticação
+    C-->>N: ✅ Autorizado
+
+    alt Upload de Áudio
+        N->>B: Salva arquivo
+        B-->>N: URL do arquivo
+        N->>I: Evento podcast/uploaded
+        I->>A: Transcreve áudio
+        A-->>I: Transcrição
+    else Link do YouTube
+        N->>P: Extrai transcrição
+        P-->>N: Transcrição + metadata
+        N->>I: Evento podcast/uploaded (com transcript)
+        Note over I: Pula AssemblyAI
+    end
+
+    par Geração Paralela
+        I->>O: Gera Resumo
+        I->>O: Gera Posts Sociais
+        I->>O: Gera Títulos
+        I->>O: Gera Hashtags
+    end
+
+    O-->>I: Conteúdo gerado
+    I->>D: Salva resultados
+    D-->>U: 🔄 Atualização real-time
+```
+
 ### Fluxo do Usuário
 
 ```mermaid
