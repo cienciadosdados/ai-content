@@ -1,6 +1,6 @@
-# AI Content Engine - Semana 4 do SaaS AI
+# AI Content Engine - Project 02 | AI CODE PRO
 
-[![Ciência dos Dados](https://img.shields.io/badge/Ci%C3%AAncia%20dos%20Dados-Projeto%20Semana%204-blue)](https://cienciadosdados.com)
+[![AI CODE PRO](https://img.shields.io/badge/AI%20CODE%20PRO-Project%2002-blue)](https://cienciadosdados.com)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![Convex](https://img.shields.io/badge/Convex-Database-orange)
 ![Clerk](https://img.shields.io/badge/Clerk-Auth-blue)
@@ -9,7 +9,7 @@
 ![YouTube](https://img.shields.io/badge/YouTube-Transcript-red)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT-teal)
 
-> **🎯 Projeto da Semana 4** do programa **SaaS AI** da [Ciência dos Dados](https://cienciadosdados.com)
+> **🎯 Project 02** do programa **AI CODE PRO** da [Ciência dos Dados](https://cienciadosdados.com)
 
 ## Pare de Gastar Horas Extraindo Informações de Podcasts - Deixe a IA Fazer!
 
@@ -67,9 +67,9 @@ Sem escrita manual. Sem copiar e colar entre plataformas. Sem adivinhar quais ha
 
 ---
 
-## 🎓 Sobre o Programa SaaS AI
+## 🎓 Sobre o AI CODE PRO
 
-Este projeto faz parte do programa **SaaS AI** da [Ciência dos Dados](https://cienciadosdados.com), onde construímos aplicações SaaS completas utilizando as tecnologias mais modernas do mercado.
+Este projeto faz parte do programa **AI CODE PRO** da [Ciência dos Dados](https://cienciadosdados.com), onde construímos aplicações completas utilizando IA e as tecnologias mais modernas do mercado.
 
 ### 💡 O Que Você Aprende
 
@@ -80,11 +80,11 @@ Este projeto faz parte do programa **SaaS AI** da [Ciência dos Dados](https://c
 - **Auth & Billing Modernos** - Clerk com gestão de assinaturas
 - **Deploy em Produção** - Vercel, variáveis de ambiente e monitoramento
 
-### 📅 Cronograma do Programa
+### 📅 Projetos do AI CODE PRO
 
-- **Semana 1-3**: Fundamentos e projetos iniciais
-- **Semana 4**: AI Podcast SaaS (este projeto)
-- **Semana 5+**: Projetos avançados e EDUCAR SaaS
+- **Project 01**: Fundamentos e setup inicial
+- **Project 02**: AI Content Engine (este projeto)
+- **Project 03+**: Projetos avançados
 
 ### 👉 [Saiba mais em cienciadosdados.com](https://cienciadosdados.com)
 
@@ -670,7 +670,7 @@ Quer evoluir este projeto? Aqui estão algumas features avançadas que você pod
 - **💳 Sistema de Créditos** - Modelo pay-per-use ao invés de assinaturas
 - **🎁 Programa de Referral** - Recompensar usuários por trazer novos clientes
 
-**Escolha uma feature e construa!** Depois compartilhe no programa SaaS AI da Ciência dos Dados.
+**Escolha uma feature e construa!** Depois compartilhe no programa AI CODE PRO da Ciência dos Dados.
 
 ---
 
@@ -773,4 +773,4 @@ Construído com ferramentas incríveis de:
 
 ---
 
-**Construído com ❤️ para a comunidade Ciência dos Dados - Programa SaaS AI Semana 4**
+**Construído com ❤️ para a comunidade Ciência dos Dados - AI CODE PRO Project 02**
