@@ -150,6 +150,121 @@ Este projeto faz parte do programa **AI CODE PRO** da [Ciência dos Dados](https
 
 ## 🔧 Como Funciona
 
+### Arquitetura de Processamento LLM
+
+Este projeto usa **LLM Features** (não agentes). Cada função faz uma chamada única ao GPT-5-mini com prompt especializado e retorna dados estruturados.
+
+```mermaid
+flowchart TB
+    subgraph Input["📥 Entrada"]
+        TRANSCRIPT[Transcrição do Podcast<br/>YouTube ou AssemblyAI]
+    end
+
+    subgraph Orchestrator["⚙️ Orquestrador Inngest"]
+        PROCESSOR[podcast-processor.ts<br/>Promise.allSettled]
+    end
+
+    subgraph LLMFeatures["🤖 LLM Features - GPT-5-mini"]
+        direction TB
+        
+        subgraph Free["🆓 Plano Free"]
+            SUMMARY[summary.ts<br/>Resumo Completo]
+        end
+        
+        subgraph Pro["⭐ Plano Pro"]
+            SOCIAL[social-posts.ts<br/>Posts 6 Redes]
+            TITLES[titles.ts<br/>Sugestões de Títulos]
+            HASHTAGS[hashtags.ts<br/>Hashtags por Plataforma]
+        end
+        
+        subgraph Ultra["👑 Plano Ultra"]
+            MOMENTS[key-moments.ts<br/>Momentos Virais]
+            TIMESTAMPS[youtube-timestamps.ts<br/>Capítulos YouTube]
+        end
+    end
+
+    subgraph Output["💾 Saída"]
+        CONVEX[(Convex Database)]
+        UI[Dashboard Real-time]
+    end
+
+    TRANSCRIPT --> PROCESSOR
+    
+    PROCESSOR --> SUMMARY
+    PROCESSOR --> SOCIAL
+    PROCESSOR --> TITLES
+    PROCESSOR --> HASHTAGS
+    PROCESSOR --> MOMENTS
+    PROCESSOR --> TIMESTAMPS
+    
+    SUMMARY --> CONVEX
+    SOCIAL --> CONVEX
+    TITLES --> CONVEX
+    HASHTAGS --> CONVEX
+    MOMENTS --> CONVEX
+    TIMESTAMPS --> CONVEX
+    
+    CONVEX --> UI
+
+    style Free fill:#10b981,stroke:#059669,color:#fff
+    style Pro fill:#3b82f6,stroke:#2563eb,color:#fff
+    style Ultra fill:#8b5cf6,stroke:#7c3aed,color:#fff
+```
+
+### Detalhes de Cada LLM Feature
+
+```mermaid
+flowchart LR
+    subgraph summary["📝 summary.ts"]
+        S_IN[Transcrição + Capítulos] --> S_PROMPT[System: Especialista em resumos<br/>User: Texto + contexto]
+        S_PROMPT --> S_LLM[GPT-5-mini<br/>zodResponseFormat]
+        S_LLM --> S_OUT[full, bullets, insights, tldr]
+    end
+
+    subgraph social["📱 social-posts.ts"]
+        SO_IN[Transcrição] --> SO_PROMPT[System: Social media expert<br/>User: Conteúdo + plataformas]
+        SO_PROMPT --> SO_LLM[GPT-5-mini<br/>zodResponseFormat]
+        SO_LLM --> SO_OUT[twitter, linkedin, instagram<br/>tiktok, youtube, facebook]
+    end
+
+    subgraph titles["🎯 titles.ts"]
+        T_IN[Transcrição] --> T_PROMPT[System: Copywriter expert<br/>User: Conteúdo + estilos]
+        T_PROMPT --> T_LLM[GPT-5-mini<br/>zodResponseFormat]
+        T_LLM --> T_OUT[youtube_short, youtube_long<br/>podcast, seo_keywords]
+    end
+
+    subgraph hashtags["#️⃣ hashtags.ts"]
+        H_IN[Transcrição + Tópicos] --> H_PROMPT[System: Growth expert<br/>User: Tópicos + plataformas]
+        H_PROMPT --> H_LLM[GPT-5-mini<br/>zodResponseFormat]
+        H_LLM --> H_OUT[twitter, linkedin, instagram<br/>tiktok, youtube]
+    end
+
+    subgraph moments["⚡ key-moments.ts"]
+        M_IN[Transcrição + Timestamps] --> M_PROMPT[System: Video editor<br/>User: Conteúdo + timing]
+        M_PROMPT --> M_LLM[GPT-5-mini<br/>zodResponseFormat]
+        M_LLM --> M_OUT[timestamp, title, description<br/>viral_potential]
+    end
+
+    subgraph timestamps["⏱️ youtube-timestamps.ts"]
+        YT_IN[Transcrição + Capítulos] --> YT_PROMPT[System: YouTube expert<br/>User: Capítulos + timing]
+        YT_PROMPT --> YT_LLM[GPT-5-mini<br/>zodResponseFormat]
+        YT_LLM --> YT_OUT[time, title, description]
+    end
+```
+
+### Por que LLM Features e não Agentes?
+
+| Aspecto | LLM Feature (usado aqui) | Agente |
+|---------|--------------------------|--------|
+| **Chamadas** | 1 chamada por feature | Múltiplas chamadas iterativas |
+| **Decisões** | Nenhuma - prompt fixo | Decide próximos passos |
+| **Ferramentas** | Não usa | Usa ferramentas externas |
+| **Custo** | Baixo e previsível | Alto e variável |
+| **Latência** | ~5-10s por feature | Minutos |
+| **Controle** | Total - output estruturado | Menos previsível |
+
+**Vantagem**: Execução paralela de 6 features em ~60 segundos total.
+
 ### Stack de Tecnologias
 
 ```mermaid
