@@ -1,17 +1,23 @@
-# AI Content Engine - Project 02 | AI CODE PRO
+# 🎙️ AI Content Engine
 
-[![AI CODE PRO](https://img.shields.io/badge/AI%20CODE%20PRO-Project%2002-blue)](https://cienciadosdados.com)
-![Next.js](https://img.shields.io/badge/Next.js-16-black)
-![Convex](https://img.shields.io/badge/Convex-Database-orange)
-![Clerk](https://img.shields.io/badge/Clerk-Auth-blue)
-![Inngest](https://img.shields.io/badge/Inngest-Workflows-purple)
-![AssemblyAI](https://img.shields.io/badge/AssemblyAI-Transcription-green)
-![YouTube](https://img.shields.io/badge/YouTube-Transcript-red)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT-teal)
+### Transforme podcasts e vídeos do YouTube em conteúdo para 6 redes sociais automaticamente
 
-> **🎯 Project 02** do programa **AI CODE PRO** da [Ciência dos Dados](https://cienciadosdados.com)
+[![AI CODE PRO](https://img.shields.io/badge/AI%20CODE%20PRO-Project%2002-blueviolet?style=for-the-badge)](https://cienciadosdados.com)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--5-teal?style=for-the-badge&logo=openai)](https://openai.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
 
-## Pare de Gastar Horas Extraindo Informações de Podcasts - Deixe a IA Fazer!
+[![Convex](https://img.shields.io/badge/Convex-Database-orange?style=flat-square)](https://convex.dev)
+[![Clerk](https://img.shields.io/badge/Clerk-Auth-blue?style=flat-square)](https://clerk.com)
+[![Inngest](https://img.shields.io/badge/Inngest-Workflows-purple?style=flat-square)](https://inngest.com)
+[![AssemblyAI](https://img.shields.io/badge/AssemblyAI-Transcription-green?style=flat-square)](https://assemblyai.com)
+[![YouTube](https://img.shields.io/badge/YouTube-Transcript-red?style=flat-square&logo=youtube)](https://youtube.com)
+
+---
+
+> **🎯 Project 02** do programa **[AI CODE PRO](https://cienciadosdados.com)** da Ciência dos Dados
+
+## 🚀 Pare de Gastar Horas Extraindo Informações de Podcasts - Deixe a IA Fazer!
 
 Faça upload do seu podcast **ou cole um link do YouTube**. Receba conteúdo otimizado para 6 redes sociais automaticamente.
 
